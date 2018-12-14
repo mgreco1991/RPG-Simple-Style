@@ -1,0 +1,1852 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>RPG</title>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+	<link rel="stylesheet" type="text/css" href="assets/css/style.css">
+</head>
+<body>
+	<div class="wrapper">
+		<div class="row">
+			<h1>Welcome to the Best RPG Ever Made</h1>
+			<p style="text-align: center;">Press "Start Game" to begin. Then, click on a character to play as. Two new pictures will appear below the first two; your character is on the left, and your randomly chosen enemy is on the right. Click attack to do physical damage, and special attack to do magical or ranged damage. Keep in mind that sorcerers have stronger special attacking power, while warriors have stronger physical attacking power. Your stats are displayed below the character pictures after the game has started.</p>
+			<button id="startGame" onclick="startGame()">Start Game</button>
+			<br><br> 
+		</div>
+		<div class="row" id="selectPlayer" style="display: none;">
+			<h1>Select Your Player</h1>
+			<div class="col-12 col-md-3 col-lg-3" id="maleSorcerer">Male Sorcerer<img src="assets/images/male_sorcerer.jpg"></div>
+			<div class="col-12 col-md-3 col-lg-3" id="maleWarrior">Male Warrior<img src="assets/images/male_warrior.jpg"></div>
+			<div class="col-12 col-md-3 col-lg-3" id="femaleSorcerer">Female Sorcerer<img src="assets/images/female_sorcerer.jpg"></div>
+			<div class="col-12 col-md-3 col-lg-3" id="femaleWarrior">Female Warrior<img src="assets/images/female_warrior.jpg"></div>
+		</div>
+		<div class="row">
+			<div class="col-6" id="yourPlayer" style="width: 50%; height: auto; display: inline-block;"><div id="yourHPBar"></div><div id="displayYourStats"></div></div>
+			
+			<div class="col-6" id="enemyPlayer" style="height: auto; width: 50%; display: inline-block;"><div id="enemyHPBar"></div><div id="displayEnemyStats"></div></div>
+		</div>
+		<div class="row">
+			<button id="useAttack">Use Attack</button>
+			<button id="useSpecialAttack">Use Special Attack</button>
+		</div>
+	</div>
+
+	<script>
+
+	var playerSelected;
+	var playerWasAlreadySelected;
+	var wins = 0;
+	var losses = 0;
+
+	function startGame(){
+
+		$("#selectPlayer").css("display", "block");
+		var playerSelected = false;
+		var enemySelected = false;
+		var playerWasAlreadySelected = false;
+		var yourChar;
+		var enemyChar;
+		var enemyCritHappened = false;
+
+		var maleSorcerer = {
+			"name": "Male Sorcerer",
+			"hp": 200,
+			"att": 10,
+			"spAtt": 20,
+			"maleSorcererCritHappened": false,
+			"maleSorcererAbilityActivated": false,
+			maleAbracadabra: function(){
+				$("#displayYourStats").append('<p>Male sorcerer ability activated!</p>');
+					if (this.maleSorcererAbilityActivated){
+						console.log("The ability was already used.");
+						return;
+					}
+				this.spAtt = this.spAtt * 3;
+				this.maleSorcererAbilityActivated = true;	
+			},
+			maleSorcererCrit: function(){
+					var maleSorcererCritChance = Math.floor(Math.random()*10);
+					console.log(maleSorcererCritChance);
+					if(this.maleSorcererCritHappened){
+						this.att = 10;
+						this.spAtt = 20;
+					}
+					if (maleSorcererCritChance === 9){
+						alert("You scored a critical hit!");
+						this.att = this.att * 2;
+						this.spAtt = this.spAtt * 2;
+						this.maleSorcererCritHappened = true;
+					}
+				}	
+			}
+					
+		var enemyMaleSorcerer = {
+			"name": "Enemy Male Sorcerer",
+			"hp": 200,
+			"att": 10,
+			"spAtt": 20,
+			"enemyMaleSorcererCritHappened": false,
+			"enemyMaleSorcererAbilityActivated": false,
+			enemyMaleAbracadabra: function(){
+				if (this.enemyMaleSorcererAbilityActivated){
+					console.log("The ability was already used.");
+					return;
+				}
+				alert("Enemy male sorcerer ability activated!");
+				this.spAtt = this.spAtt * 3;
+				this.enemyMaleSorcererAbilityActivated = true;
+			},
+			enemyMaleSorcererCrit: function(){
+					var enemyMaleSorcererCritChance = Math.floor(Math.random()*10);
+					console.log(enemyMaleSorcererCritChance);
+					if(this.enemyMaleSorcererCritHappened){
+						this.att = 10;
+						this.spAtt = 20;
+					}
+					if (enemyMaleSorcererCritChance === 9){
+						alert("The enemy scored a critical hit!");
+						this.att = this.att * 2;
+						this.spAtt = this.spAtt * 2;
+						this.enemyMaleSorcererCritHappened = true;
+					}
+				}	
+			}
+
+			var femaleSorcerer = {
+			"name": "Female Sorcerer",
+			"hp": 200,
+			"att": 10,
+			"spAtt": 20,
+			"femaleSorcererCritHappened": false,
+			"femaleSorcererAbilityActivated": false,
+			femaleAbracadabra: function(){
+				console.log("Female sorcerer ability activated!");
+					if (this.femaleSorcererAbilityActivated){
+						console.log("The ability was already used.");
+						return;
+					}
+				this.spAtt = this.spAtt * 3;
+				this.femaleSorcererAbilityActivated = true;	
+			},
+			femaleSorcererCrit: function(){
+					var femaleSorcererCritChance = Math.floor(Math.random()*10);
+					console.log(femaleSorcererCritChance);
+					if(this.femaleSorcererCritHappened){
+						this.att = 10;
+						this.spAtt = 20;
+					}
+					if (femaleSorcererCritChance === 9){
+						alert("You scored a critical hit!");
+						this.att = this.att * 2;
+						this.spAtt = this.spAtt * 2;
+						this.femaleSorcererCritHappened = true;
+					}
+				}	
+			}
+					
+		var enemyFemaleSorcerer = {
+			"name": "Enemy Female Sorcerer",
+			"hp": 200,
+			"att": 10,
+			"spAtt": 20,
+			"enemyfemaleSorcererCritHappened": false,
+			"enemyfemaleSorcererAbilityActivated": false,
+			enemyFemaleAbracadabra: function(){
+				if (this.enemyfemaleSorcererAbilityActivated){
+					console.log("The ability was already used.");
+					return;
+				}
+				alert("Enemy female sorcerer ability activated!");
+				this.spAtt = this.spAtt * 3;
+				this.enemyFemaleSorcererAbilityActivated = true;
+			},
+			enemyFemaleSorcererCrit: function(){
+					var enemyFemaleSorcererCritChance = Math.floor(Math.random()*10);
+					console.log(enemyFemaleSorcererCritChance);
+					if(this.enemyFemaleSorcererCritHappened){
+						this.att = 10;
+						this.spAtt = 20;
+					}
+					if (enemyFemaleSorcererCritChance === 9){
+						alert("The enemy scored a critical hit!");
+						this.att = this.att * 2;
+						this.spAtt = this.spAtt * 2;
+						this.enemyFemaleSorcererCritHappened = true;
+					}
+				}	
+			}
+
+		var maleWarrior = {
+				"name": "Male warrior",
+				"hp": 200,
+				"att": 20,
+				"spAtt": 10,
+				"maleWarriorCritHappened": false,
+				"maleWarriorAbilityActivated": false,
+				maleMightySword: function(){
+					if (this.maleWarriorAbilityActivated){
+						console.log("The ability was already used.");
+						return;
+					}
+					alert("Male warrior ability activated!");
+					this.att = this.att * 3;
+					this.maleWarriorAbilityActivated = true;
+				},
+				maleWarriorCrit: function(){
+					var maleWarriorCritChance = Math.floor(Math.random()*10);
+					console.log(maleWarriorCritChance);
+					if(this.maleWarriorCritHappened){
+						this.att = 20;
+						this.spAtt = 10;
+					}
+					if (maleWarriorCritChance === 9){
+						alert("You scored a critical hit!");
+						this.att = this.att * 2;
+						this.spAtt = this.spAtt * 2;
+						this.maleWarriorCritHappened = true;
+					}
+				}	
+			}
+
+		var enemyMaleWarrior = {
+			"name": "Enemy Male warrior",
+			"hp": 200,
+			"att": 20,
+			"spAtt": 10,
+			"enemyMaleWarriorCritHappened": false,
+			"enemyMaleWarriorAbilityActivated": false,
+			enemyMaleMightySword: function(){
+				if (this.enemyMaleWarriorAbilityActivated){
+					return;
+				}
+				alert("Enemy male warrior ability activated!");
+				this.att = this.att * 3;
+				this.enemyMaleWarriorAbilityActivated = true;
+				},
+			enemyMaleWarriorCrit: function(){
+				var enemyMaleWarriorCritChance = Math.floor(Math.random()*10);
+				console.log(enemyMaleWarriorCritChance);
+				if(this.enemyMaleWarriorCritHappened){
+					this.att = 20;
+					this.spAtt = 5;
+				}
+				if (enemyMaleWarriorCritChance === 9){
+					alert("The enemy scored a critical hit!");
+					this.att = this.att * 2;
+					this.spAtt = this.spAtt * 2;
+					this.enemyMaleWarriorCritHappened = true;
+				}
+			}	
+		}
+
+		var femaleWarrior = {
+			"name": "Female warrior",
+			"hp": 200,
+			"att": 20,
+			"spAtt": 10,
+			"FemaleWarriorCritHappened": false,
+			"femaleWarriorAbilityActivated": false,
+			femaleMightySword: function(){
+				if (this.femaleWarriorAbilityActivated){
+					console.log("The ability was already used.");
+					return;
+				}
+				alert("Female warrior ability activated!");
+				this.att = this.att * 3;
+				this.femaleWarriorAbilityActivated = true;
+			},
+			femaleWarriorCrit: function(){
+				var femaleWarriorCritChance = Math.floor(Math.random()*10);
+				console.log(femaleWarriorCritChance);
+				if(this.femaleWarriorCritHappened){
+					this.att = 20;
+					this.spAtt = 10;
+				}
+				if (femaleWarriorCritChance === 9){
+					alert("You scored a critical hit!");
+					this.att = this.att * 2;
+					this.spAtt = this.spAtt * 2;
+					this.femaleWarriorCritHappened = true;
+				}
+			}	
+		}
+
+		var enemyFemaleWarrior = {
+			"name": "Enemy Female warrior",
+			"hp": 200,
+			"att": 20,
+			"spAtt": 10,
+			"enemyFemaleWarriorCritHappened": false,
+			"enemyFemaleWarriorAbilityActivated": false,
+			enemyFemaleMightySword: function(){
+				if (this.enemyFemaleWarriorAbilityActivated){
+					console.log("The ability was already used.");
+					return;
+				}
+				alert("Enemy female warrior ability activated!");
+				this.att = this.att * 3;
+				this.enemyFemaleWarriorAbilityActivated = true;
+				},
+			enemyMaleWarriorCrit: function(){
+				var enemyFemaleWarriorCritChance = Math.floor(Math.random()*10);
+				console.log(enemyFemaleWarriorCritChance);
+				if(this.enemyFemaleWarriorCritHappened){
+					this.att = 20;
+					this.spAtt = 5;
+				}
+				if (enemyFemaleWarriorCritChance === 9){
+					alert("The enemy scored a critical hit!");
+					this.att = this.att * 2;
+					this.spAtt = this.spAtt * 2;
+					this.enemyFemaleWarriorCritHappened = true;
+				}
+			}	
+		}
+
+		$("#maleSorcerer").on("click", function(){
+			console.log("--------------------");
+			if (playerSelected && playerWasAlreadySelected){
+				console.log("Was the player selected? " + playerSelected);
+				console.log("Was the player already selected? " +playerWasAlreadySelected);
+				console.log("--------------------");
+				return;
+			}
+			$("#yourPlayer").prepend('<img src="assets/images/male_sorcerer.jpg" />');
+			$("#yourHPBar").html('<img src="assets/images/200hp.png" />');
+			$("#enemyHPBar").html('<img src="assets/images/200hp.png" />');
+			yourChar = maleSorcerer;
+			$("#displayYourStats").append('<p>' + yourChar.name + '</p>');
+			$("#displayYourStats").append('<p>' + "Attack: " + yourChar.att + '</p>');
+			$("#displayYourStats").append('<p>' + "Special Attack: " + yourChar.spAtt + '</p>');
+			console.log("Your player is: " + yourChar.name);
+			console.log("--------------------");
+			playerSelected = true;
+			playerWasAlreadySelected = true;
+			if(playerSelected){
+				var enemyChar = Math.floor(Math.random()*4);
+				enemySelected = true;
+				if(enemyChar === 0 && enemySelected){
+					$("#enemyPlayer").prepend('<img src="assets/images/female_sorcerer.jpg" />');
+					enemyChar = enemyFemaleSorcerer;
+					$("#displayEnemyStats").append('<p>' + enemyChar.name + '</p>');
+					$("#displayEnemyStats").append('<p>' + "Attack: " + enemyChar.att + '</p>');
+					$("#displayEnemyStats").append('<p>' + "Special Attack: " + enemyChar.spAtt + '</p>');
+					console.log("Your enemy is: " + enemyChar.name);
+					console.log("--------------------");
+				} else if (enemyChar === 1 && enemySelected) {
+					$("#enemyPlayer").prepend('<img src="assets/images/male_warrior.jpg" />');
+					enemyChar = enemyMaleWarrior;
+					$("#displayEnemyStats").append('<p>' + enemyChar.name + '</p>');
+					$("#displayEnemyStats").append('<p>' + "Attack: " + enemyChar.att + '</p>');
+					$("#displayEnemyStats").append('<p>' + "Special Attack: " + enemyChar.spAtt + '</p>');
+					console.log("Your enemy is: " + enemyChar.name)
+					console.log("--------------------");
+				} else if (enemyChar === 2 && enemySelected) {
+					$("#enemyPlayer").prepend('<img src="assets/images/male_sorcerer.jpg" />');
+					enemyChar = enemyMaleSorcerer;
+					$("#displayEnemyStats").append('<p>' + enemyChar.name + '</p>');
+					$("#displayEnemyStats").append('<p>' + "Attack: " + enemyChar.att + '</p>');
+					$("#displayEnemyStats").append('<p>' + "Special Attack: " + enemyChar.spAtt + '</p>');
+					console.log("Your enemy is: " + enemyChar.name)
+					console.log("--------------------");
+				} else if (enemyChar === 3 && enemySelected) {
+					$("#enemyPlayer").prepend('<img src="assets/images/female_warrior.jpg" />');
+					enemyChar = enemyFemaleWarrior;
+					$("#displayEnemyStats").append('<p>' + enemyChar.name + '</p>');
+					$("#displayEnemyStats").append('<p>' + "Attack: " + enemyChar.att + '</p>');
+					$("#displayEnemyStats").append('<p>' + "Special Attack: " + enemyChar.spAtt + '</p>');
+					console.log("Your enemy is: " + enemyChar.name)
+					console.log("--------------------");
+				} 
+				$("#useAttack").on("click", function(){
+					yourChar.maleSorcererCrit();
+					enemyCrit();
+					function enemyCrit(){
+						var enemyCritChance = Math.floor(Math.random()*10);
+						if(enemyCritHappened){
+							enemyChar.att = enemyChar.att / 2;
+							enemyChar.spAtt = enemyChar.spAtt / 2;
+							enemyCritHappened = false;
+						}
+						if (enemyCritChance === 9){
+							alert("The enemy scored a critical hit!");
+							enemyChar.att = enemyChar.att * 2;
+							enemyChar.spAtt = enemyChar.spAtt * 2;
+							enemyCritHappened = true;
+						}
+					}
+					if (enemyChar === enemyMaleSorcerer && enemyChar.hp <= 50){
+						enemyMaleSorcerer.enemyMaleAbracadabra();
+					} else if (enemyChar === enemyMaleWarrior && enemyChar.hp <= 50){
+						enemyMaleWarrior.enemyMaleMightySword();
+					} if (enemyChar === enemyFemaleSorcerer && enemyChar.hp <= 50){
+						enemyFemaleSorcerer.enemyFemaleAbracadabra();
+					} else if (enemyChar === enemyFemaleWarrior && enemyChar.hp <= 50){
+						enemyFemaleWarrior.enemyFemaleMightySword();
+					}	
+					var attackOrSpecialAttack = Math.floor(Math.random()*2);
+					if(attackOrSpecialAttack === 0){
+						console.log("The enemy used a physical attack!");
+						yourChar.hp = yourChar.hp - enemyChar.att;
+					} else if (attackOrSpecialAttack === 1){
+						console.log("The enemy used a special attack!");
+						yourChar.hp = yourChar.hp - enemyChar.spAtt;
+					}
+					enemyChar.hp = enemyChar.hp - yourChar.att;
+					console.log("--------------------");
+					console.log("your current hp is: " + yourChar.hp);
+					console.log("the enemy's current hp is: " + enemyChar.hp);
+					console.log("--------------------");
+					if(yourChar.hp === 190){
+						$("#yourHPBar").html('<img src="assets/images/190hp.png" />' + '<p>' + yourChar.hp + "/" + "200" +'</p>');
+					}
+					else if (yourChar.hp === 180){
+						$("#yourHPBar").html('<img src="assets/images/180hp.png" />' + '<p>' + yourChar.hp + "/" + "200" +'</p>');
+					}
+					else if(yourChar.hp === 170){
+						$("#yourHPBar").html('<img src="assets/images/170hp.png" />' + '<p>' + yourChar.hp + "/" + "200" +'</p>');
+					}
+					else if (yourChar.hp === 160){
+						$("#yourHPBar").html('<img src="assets/images/160hp.png" />' + '<p>' + yourChar.hp + "/" + "200" +'</p>');
+					}
+					else if(yourChar.hp === 150){
+						$("#yourHPBar").html('<img src="assets/images/150hp.png" />' + '<p>' + yourChar.hp + "/" + "200" +'</p>');
+					}
+					else if (yourChar.hp === 140){
+						$("#yourHPBar").html('<img src="assets/images/140hp.png" />' + '<p>' + yourChar.hp + "/" + "200" +'</p>');
+					}
+					else if(yourChar.hp === 130){
+						$("#yourHPBar").html('<img src="assets/images/130hp.png" />' + '<p>' + yourChar.hp + "/" + "200" +'</p>');
+					}
+					else if (yourChar.hp === 120){
+						$("#yourHPBar").html('<img src="assets/images/120hp.png" />' + '<p>' + yourChar.hp + "/" + "200" +'</p>');
+					}
+					else if(yourChar.hp === 110){
+						$("#yourHPBar").html('<img src="assets/images/110hp.png" />' + '<p>' + yourChar.hp + "/" + "200" +'</p>');
+					}
+					else if (yourChar.hp === 100){
+						$("#yourHPBar").html('<img src="assets/images/100hp.png" />' + '<p>' + yourChar.hp + "/" + "200" +'</p>');
+					}
+					else if(yourChar.hp === 90){
+						$("#yourHPBar").html('<img src="assets/images/90hp.png" />' + '<p>' + yourChar.hp + "/" + "200" +'</p>');
+					}
+					else if (yourChar.hp === 80){
+						$("#yourHPBar").html('<img src="assets/images/80hp.png" />' + '<p>' + yourChar.hp + "/" + "200" +'</p>');
+					}
+					else if (yourChar.hp === 70){
+						$("#yourHPBar").html('<img src="assets/images/70hp.png" />' + '<p>' + yourChar.hp + "/" + "200" +'</p>');
+					}
+					else if (yourChar.hp === 60){
+						$("#yourHPBar").html('<img src="assets/images/60hp.png" />' + '<p>' + yourChar.hp + "/" + "200" +'</p>');
+					}
+					else if (yourChar.hp === 50){
+						$("#yourHPBar").html('<img src="assets/images/50hp.png" />' + '<p>' + yourChar.hp + "/" + "200" +'</p>');
+					}
+					else if (yourChar.hp === 40){
+						$("#yourHPBar").html('<img src="assets/images/40hp.png" />' + '<p>' + yourChar.hp + "/" + "200" +'</p>');
+					}
+					else if (yourChar.hp === 30){
+						$("#yourHPBar").html('<img src="assets/images/30hp.png" />' + '<p>' + yourChar.hp + "/" + "200" +'</p>');
+					}
+					else if (yourChar.hp === 20){
+						$("#yourHPBar").html('<img src="assets/images/20hp.png" />' + '<p>' + yourChar.hp + "/" + "200" +'</p>');
+					}
+					else if (yourChar.hp === 10){
+						$("#yourHPBar").html('<img src="assets/images/10hp.png" />' + '<p>' + yourChar.hp + "/" + "200" +'</p>');
+					}
+					else if(yourChar.hp <= 0){
+						alert("You lose! Refresh the browser to play again!");
+						$("#yourHPBar").html('<img src="assets/images/0hp.png" />' + '<p>' + yourChar.hp + "/" + "200" +'</p>');
+					} 
+					if (enemyChar.hp === 190){
+						$("#enemyHPBar").html('<img src="assets/images/190hp.png" />' + '<p>' + enemyChar.hp + "/" + "200" +'</p>');
+					}
+					else if (enemyChar.hp === 180){
+						$("#enemyHPBar").html('<img src="assets/images/180hp.png" />' + '<p>' + enemyChar.hp + "/" + "200" +'</p>');
+					}
+					else if (enemyChar.hp === 170){
+						$("#enemyHPBar").html('<img src="assets/images/170hp.png" />' + '<p>' + enemyChar.hp + "/" + "200" +'</p>');
+					}
+					else if (enemyChar.hp === 160){
+						$("#enemyHPBar").html('<img src="assets/images/160hp.png" />' + '<p>' + enemyChar.hp + "/" + "200" +'</p>');
+					}
+					else if (enemyChar.hp === 150){
+						$("#enemyHPBar").html('<img src="assets/images/150hp.png" />' + '<p>' + enemyChar.hp + "/" + "200" +'</p>');
+					}
+					else if (enemyChar.hp === 140){
+						$("#enemyHPBar").html('<img src="assets/images/140hp.png" />' + '<p>' + enemyChar.hp + "/" + "200" +'</p>');
+					}
+					else if (enemyChar.hp === 130){
+						$("#enemyHPBar").html('<img src="assets/images/130hp.png" />' + '<p>' + enemyChar.hp + "/" + "200" +'</p>');
+					}
+					else if (enemyChar.hp === 120){
+						$("#enemyHPBar").html('<img src="assets/images/120hp.png" />' + '<p>' + enemyChar.hp + "/" + "200" +'</p>');
+					}
+					else if (enemyChar.hp === 110){
+						$("#enemyHPBar").html('<img src="assets/images/110hp.png" />' + '<p>' + enemyChar.hp + "/" + "200" +'</p>');
+					}
+					else if (enemyChar.hp === 100){
+						$("#enemyHPBar").html('<img src="assets/images/100hp.png" />' + '<p>' + enemyChar.hp + "/" + "200" +'</p>');
+					}
+					else if (enemyChar.hp === 90){
+						$("#enemyHPBar").html('<img src="assets/images/90hp.png" />' + '<p>' + enemyChar.hp + "/" + "200" +'</p>');
+					}
+					else if (enemyChar.hp === 80){
+						$("#enemyHPBar").html('<img src="assets/images/80hp.png" />' + '<p>' + enemyChar.hp + "/" + "200" +'</p>');
+					}
+					else if (enemyChar.hp === 70){
+						$("#enemyHPBar").html('<img src="assets/images/70hp.png" />' + '<p>' + enemyChar.hp + "/" + "200" +'</p>');
+					}
+					else if (enemyChar.hp === 60){
+						$("#enemyHPBar").html('<img src="assets/images/60hp.png" />' + '<p>' + enemyChar.hp + "/" + "200" +'</p>');
+					}
+					else if (enemyChar.hp === 50){
+						$("#enemyHPBar").html('<img src="assets/images/50hp.png" />' + '<p>' + enemyChar.hp + "/" + "200" +'</p>');
+					}
+					else if (enemyChar.hp === 40){
+						$("#enemyHPBar").html('<img src="assets/images/40hp.png" />' + '<p>' + enemyChar.hp + "/" + "200" +'</p>');
+					}
+					else if (enemyChar.hp === 30){
+						$("#enemyHPBar").html('<img src="assets/images/30hp.png" />' + '<p>' + enemyChar.hp + "/" + "200" +'</p>');
+					}
+					else if (enemyChar.hp === 20){
+						$("#enemyHPBar").html('<img src="assets/images/20hp.png" />' + '<p>' + enemyChar.hp + "/" + "200" +'</p>');
+					}
+					else if (enemyChar.hp === 10){
+						$("#enemyHPBar").html('<img src="assets/images/10hp.png" />' + '<p>' + enemyChar.hp + "/" + "200" +'</p>');
+					}
+					else if (enemyChar.hp <= 0){
+						$("#enemyHPBar").html('<img src="assets/images/0hp.png" />' + '<p>' + enemyChar.hp + "/" + "200" +'</p>');
+						alert("You win! Refresh the browser to play again!");
+					}
+				});
+				$("#useSpecialAttack").on("click", function(){
+					yourChar.maleSorcererCrit();
+					enemyCrit();
+					function enemyCrit(){
+						var enemyCritChance = Math.floor(Math.random()*10);
+						if(enemyCritHappened){
+							enemyChar.att = enemyChar.att / 2;
+							enemyChar.spAtt = enemyChar.spAtt / 2;
+							enemyCritHappened = false;
+						}
+						if (enemyCritChance === 9){
+							alert("The enemy scored a critical hit!");
+							enemyChar.att = enemyChar.att * 2;
+							enemyChar.spAtt = enemyChar.spAtt * 2;
+							enemyCritHappened = true;
+						}
+					}
+					if (yourChar.hp <= 50){
+						yourChar.maleAbracadabra();
+					}
+					if (enemyChar === enemyMaleSorcerer && enemyChar.hp <= 50){
+						enemyMaleSorcerer.enemyMaleAbracadabra();
+					} else if (enemyChar === enemyMaleWarrior && enemyChar.hp <= 50){
+						enemyMaleWarrior.enemyMaleMightySword();
+					} else if (enemyChar === enemyFemaleSorcerer && enemyChar.hp <= 50){
+						enemyFemaleSorcerer.enemyFemaleAbracadabra();
+					} else if (enemyChar === enemyFemaleWarrior && enemyChar.hp <= 50){
+						enemyFemaleWarrior.enemyFemaleMightySword();
+					}
+					var attackOrSpecialAttack = Math.floor(Math.random()*2);
+					if(attackOrSpecialAttack === 0){
+						console.log("The enemy used a physical attack!");
+						yourChar.hp = yourChar.hp - enemyChar.att;
+					} else if (attackOrSpecialAttack === 1){
+						console.log("The enemy used a special attack!");
+						yourChar.hp = yourChar.hp - enemyChar.spAtt;
+					}
+					enemyChar.hp = enemyChar.hp - yourChar.spAtt;
+					console.log("--------------------");
+					console.log("your current hp is: " + yourChar.hp);
+					console.log("the enemy's current hp is: " + enemyChar.hp);
+					console.log("--------------------");
+					if(yourChar.hp === 190){
+						$("#yourHPBar").html('<img src="assets/images/190hp.png" />' + '<p>' + yourChar.hp + "/" + "200" +'</p>');
+					}
+					else if (yourChar.hp === 180){
+						$("#yourHPBar").html('<img src="assets/images/180hp.png" />' + '<p>' + yourChar.hp + "/" + "200" +'</p>');
+					}
+					else if(yourChar.hp === 170){
+						$("#yourHPBar").html('<img src="assets/images/170hp.png" />' + '<p>' + yourChar.hp + "/" + "200" +'</p>');
+					}
+					else if (yourChar.hp === 160){
+						$("#yourHPBar").html('<img src="assets/images/160hp.png" />' + '<p>' + yourChar.hp + "/" + "200" +'</p>');
+					}
+					else if(yourChar.hp === 150){
+						$("#yourHPBar").html('<img src="assets/images/150hp.png" />' + '<p>' + yourChar.hp + "/" + "200" +'</p>');
+					}
+					else if (yourChar.hp === 140){
+						$("#yourHPBar").html('<img src="assets/images/140hp.png" />' + '<p>' + yourChar.hp + "/" + "200" +'</p>');
+					}
+					else if(yourChar.hp === 130){
+						$("#yourHPBar").html('<img src="assets/images/130hp.png" />' + '<p>' + yourChar.hp + "/" + "200" +'</p>');
+					}
+					else if (yourChar.hp === 120){
+						$("#yourHPBar").html('<img src="assets/images/120hp.png" />' + '<p>' + yourChar.hp + "/" + "200" +'</p>');
+					}
+					else if(yourChar.hp === 110){
+						$("#yourHPBar").html('<img src="assets/images/110hp.png" />' + '<p>' + yourChar.hp + "/" + "200" +'</p>');
+					}
+					else if (yourChar.hp === 100){
+						$("#yourHPBar").html('<img src="assets/images/100hp.png" />' + '<p>' + yourChar.hp + "/" + "200" +'</p>');
+					}
+					else if(yourChar.hp === 90){
+						$("#yourHPBar").html('<img src="assets/images/90hp.png" />' + '<p>' + yourChar.hp + "/" + "200" +'</p>');
+					}
+					else if (yourChar.hp === 80){
+						$("#yourHPBar").html('<img src="assets/images/80hp.png" />' + '<p>' + yourChar.hp + "/" + "200" +'</p>');
+					}
+					else if (yourChar.hp === 70){
+						$("#yourHPBar").html('<img src="assets/images/70hp.png" />' + '<p>' + yourChar.hp + "/" + "200" +'</p>');
+					}
+					else if (yourChar.hp === 60){
+						$("#yourHPBar").html('<img src="assets/images/60hp.png" />' + '<p>' + yourChar.hp + "/" + "200" +'</p>');
+					}
+					else if (yourChar.hp === 50){
+						$("#yourHPBar").html('<img src="assets/images/50hp.png" />' + '<p>' + yourChar.hp + "/" + "200" +'</p>');
+					}
+					else if (yourChar.hp === 40){
+						$("#yourHPBar").html('<img src="assets/images/40hp.png" />' + '<p>' + yourChar.hp + "/" + "200" +'</p>');
+					}
+					else if (yourChar.hp === 30){
+						$("#yourHPBar").html('<img src="assets/images/30hp.png" />' + '<p>' + yourChar.hp + "/" + "200" +'</p>');
+					}
+					else if (yourChar.hp === 20){
+						$("#yourHPBar").html('<img src="assets/images/20hp.png" />' + '<p>' + yourChar.hp + "/" + "200" +'</p>');
+					}
+					else if (yourChar.hp === 10){
+						$("#yourHPBar").html('<img src="assets/images/10hp.png" />' + '<p>' + yourChar.hp + "/" + "200" +'</p>');
+					}
+					else if(yourChar.hp <= 0){
+						alert("You lose! Refresh the browser to play again!");
+						$("#yourHPBar").html('<img src="assets/images/0hp.png" />' + '<p>' + yourChar.hp + "/" + "200" +'</p>');
+					} 
+					if (enemyChar.hp === 190){
+						$("#enemyHPBar").html('<img src="assets/images/190hp.png" />' + '<p>' + enemyChar.hp + "/" + "200" +'</p>');
+					}
+					else if (enemyChar.hp === 180){
+						$("#enemyHPBar").html('<img src="assets/images/180hp.png" />' + '<p>' + enemyChar.hp + "/" + "200" +'</p>');
+					}
+					else if (enemyChar.hp === 170){
+						$("#enemyHPBar").html('<img src="assets/images/170hp.png" />' + '<p>' + enemyChar.hp + "/" + "200" +'</p>');
+					}
+					else if (enemyChar.hp === 160){
+						$("#enemyHPBar").html('<img src="assets/images/160hp.png" />' + '<p>' + enemyChar.hp + "/" + "200" +'</p>');
+					}
+					else if (enemyChar.hp === 150){
+						$("#enemyHPBar").html('<img src="assets/images/150hp.png" />' + '<p>' + enemyChar.hp + "/" + "200" +'</p>');
+					}
+					else if (enemyChar.hp === 140){
+						$("#enemyHPBar").html('<img src="assets/images/140hp.png" />' + '<p>' + enemyChar.hp + "/" + "200" +'</p>');
+					}
+					else if (enemyChar.hp === 130){
+						$("#enemyHPBar").html('<img src="assets/images/130hp.png" />' + '<p>' + enemyChar.hp + "/" + "200" +'</p>');
+					}
+					else if (enemyChar.hp === 120){
+						$("#enemyHPBar").html('<img src="assets/images/120hp.png" />' + '<p>' + enemyChar.hp + "/" + "200" +'</p>');
+					}
+					else if (enemyChar.hp === 110){
+						$("#enemyHPBar").html('<img src="assets/images/110hp.png" />' + '<p>' + enemyChar.hp + "/" + "200" +'</p>');
+					}
+					else if (enemyChar.hp === 100){
+						$("#enemyHPBar").html('<img src="assets/images/100hp.png" />' + '<p>' + enemyChar.hp + "/" + "200" +'</p>');
+					}
+					else if (enemyChar.hp === 90){
+						$("#enemyHPBar").html('<img src="assets/images/90hp.png" />' + '<p>' + enemyChar.hp + "/" + "200" +'</p>');
+					}
+					else if (enemyChar.hp === 80){
+						$("#enemyHPBar").html('<img src="assets/images/80hp.png" />' + '<p>' + enemyChar.hp + "/" + "200" +'</p>');
+					}
+					else if (enemyChar.hp === 70){
+						$("#enemyHPBar").html('<img src="assets/images/70hp.png" />' + '<p>' + enemyChar.hp + "/" + "200" +'</p>');
+					}
+					else if (enemyChar.hp === 60){
+						$("#enemyHPBar").html('<img src="assets/images/60hp.png" />' + '<p>' + enemyChar.hp + "/" + "200" +'</p>');
+					}
+					else if (enemyChar.hp === 50){
+						$("#enemyHPBar").html('<img src="assets/images/50hp.png" />' + '<p>' + enemyChar.hp + "/" + "200" +'</p>');
+					}
+					else if (enemyChar.hp === 40){
+						$("#enemyHPBar").html('<img src="assets/images/40hp.png" />' + '<p>' + enemyChar.hp + "/" + "200" +'</p>');
+					}
+					else if (enemyChar.hp === 30){
+						$("#enemyHPBar").html('<img src="assets/images/30hp.png" />' + '<p>' + enemyChar.hp + "/" + "200" +'</p>');
+					}
+					else if (enemyChar.hp === 20){
+						$("#enemyHPBar").html('<img src="assets/images/20hp.png" />' + '<p>' + enemyChar.hp + "/" + "200" +'</p>');
+					}
+					else if (enemyChar.hp === 10){
+						$("#enemyHPBar").html('<img src="assets/images/10hp.png" />' + '<p>' + enemyChar.hp + "/" + "200" +'</p>');
+					}
+					else if (enemyChar.hp <= 0){
+						$("#enemyHPBar").html('<img src="assets/images/0hp.png" />' + '<p>' + enemyChar.hp + "/" + "200" +'</p>');
+						alert("You win! Refresh the browser to play again!");
+					}
+				});
+			}
+		});
+
+		$("#femaleSorcerer").on("click", function(){
+			console.log("--------------------");
+			if (playerSelected && playerWasAlreadySelected){
+				console.log("Was the player selected? " + playerSelected);
+				console.log("Was the player already selected? " +playerWasAlreadySelected);
+				console.log("--------------------");
+				return;
+			}
+			$("#yourPlayer").prepend('<img src="assets/images/female_sorcerer.jpg" />');
+			$("#yourHPBar").html('<img src="assets/images/200hp.png" />');
+			$("#enemyHPBar").html('<img src="assets/images/200hp.png" />');
+			yourChar = femaleSorcerer;
+			$("#displayYourStats").append('<p>' + yourChar.name + '</p>');
+			$("#displayYourStats").append('<p>' + "Attack: " + yourChar.att + '</p>');
+			$("#displayYourStats").append('<p>' + "Special Attack: " + yourChar.spAtt + '</p>');
+			console.log("Your player is: " + yourChar.name);
+			console.log("--------------------");
+			playerSelected = true;
+			playerWasAlreadySelected = true;
+			if(playerSelected){
+				var enemyChar = Math.floor(Math.random()*4);
+				enemySelected = true;
+				if(enemyChar === 0 && enemySelected){
+					$("#enemyPlayer").prepend('<img src="assets/images/female_sorcerer.jpg" />');
+					enemyChar = enemyFemaleSorcerer;
+					$("#displayEnemyStats").append('<p>' + enemyChar.name + '</p>');
+					$("#displayEnemyStats").append('<p>' + "Attack: " + enemyChar.att + '</p>');
+					$("#displayEnemyStats").append('<p>' + "Special Attack: " + enemyChar.spAtt + '</p>');
+					console.log("Your enemy is: " + enemyChar.name);
+					console.log("--------------------");
+				} else if (enemyChar === 1 && enemySelected) {
+					$("#enemyPlayer").prepend('<img src="assets/images/male_warrior.jpg" />');
+					enemyChar = enemyMaleWarrior;
+					$("#displayEnemyStats").append('<p>' + enemyChar.name + '</p>');
+					$("#displayEnemyStats").append('<p>' + "Attack: " + enemyChar.att + '</p>');
+					$("#displayEnemyStats").append('<p>' + "Special Attack: " + enemyChar.spAtt + '</p>');
+					console.log("Your enemy is: " + enemyChar.name)
+					console.log("--------------------");
+				} else if (enemyChar === 2 && enemySelected) {
+					$("#enemyPlayer").prepend('<img src="assets/images/male_sorcerer.jpg" />');
+					enemyChar = enemyMaleSorcerer;
+					$("#displayEnemyStats").append('<p>' + enemyChar.name + '</p>');
+					$("#displayEnemyStats").append('<p>' + "Attack: " + enemyChar.att + '</p>');
+					$("#displayEnemyStats").append('<p>' + "Special Attack: " + enemyChar.spAtt + '</p>');
+					console.log("Your enemy is: " + enemyChar.name)
+					console.log("--------------------");
+				} else if (enemyChar === 3 && enemySelected) {
+					$("#enemyPlayer").prepend('<img src="assets/images/female_warrior.jpg" />');
+					enemyChar = enemyFemaleWarrior;
+					$("#displayEnemyStats").append('<p>' + enemyChar.name + '</p>');
+					$("#displayEnemyStats").append('<p>' + "Attack: " + enemyChar.att + '</p>');
+					$("#displayEnemyStats").append('<p>' + "Special Attack: " + enemyChar.spAtt + '</p>');
+					console.log("Your enemy is: " + enemyChar.name)
+					console.log("--------------------");
+				} 
+				$("#useAttack").on("click", function(){
+					yourChar.femaleSorcererCrit();
+					enemyCrit();
+					function enemyCrit(){
+						var enemyCritChance = Math.floor(Math.random()*10);
+						if(enemyCritHappened){
+							enemyChar.att = enemyChar.att / 2;
+							enemyChar.spAtt = enemyChar.spAtt / 2;
+							enemyCritHappened = false;
+						}
+						if (enemyCritChance === 9){
+							alert("The enemy scored a critical hit!");
+							enemyChar.att = enemyChar.att * 2;
+							enemyChar.spAtt = enemyChar.spAtt * 2;
+							enemyCritHappened = true;
+						}
+					}
+					if (enemyChar === enemyMaleSorcerer && enemyChar.hp <= 50){
+						enemyMaleSorcerer.enemyMaleAbracadabra();
+					} else if (enemyChar === enemyMaleWarrior && enemyChar.hp <= 50){
+						enemyMaleWarrior.enemyMaleMightySword();
+					} if (enemyChar === enemyFemaleSorcerer && enemyChar.hp <= 50){
+						enemyFemaleSorcerer.enemyFemaleAbracadabra();
+					} else if (enemyChar === enemyFemaleWarrior && enemyChar.hp <= 50){
+						enemyMaleWarrior.enemyFemaleMightySword();
+					}	
+					var attackOrSpecialAttack = Math.floor(Math.random()*2);
+					if(attackOrSpecialAttack === 0){
+						console.log("The enemy used a physical attack!");
+						yourChar.hp = yourChar.hp - enemyChar.att;
+					} else if (attackOrSpecialAttack === 1){
+						console.log("The enemy used a special attack!");
+						yourChar.hp = yourChar.hp - enemyChar.spAtt;
+					}
+					enemyChar.hp = enemyChar.hp - yourChar.att;
+					console.log("--------------------");
+					console.log("your current hp is: " + yourChar.hp);
+					console.log("the enemy's current hp is: " + enemyChar.hp);
+					console.log("--------------------");
+					if(yourChar.hp === 190){
+						$("#yourHPBar").html('<img src="assets/images/190hp.png" />' + '<p>' + yourChar.hp + "/" + "200" +'</p>');
+					}
+					else if (yourChar.hp === 180){
+						$("#yourHPBar").html('<img src="assets/images/180hp.png" />' + '<p>' + yourChar.hp + "/" + "200" +'</p>');
+					}
+					else if(yourChar.hp === 170){
+						$("#yourHPBar").html('<img src="assets/images/170hp.png" />' + '<p>' + yourChar.hp + "/" + "200" +'</p>');
+					}
+					else if (yourChar.hp === 160){
+						$("#yourHPBar").html('<img src="assets/images/160hp.png" />' + '<p>' + yourChar.hp + "/" + "200" +'</p>');
+					}
+					else if(yourChar.hp === 150){
+						$("#yourHPBar").html('<img src="assets/images/150hp.png" />' + '<p>' + yourChar.hp + "/" + "200" +'</p>');
+					}
+					else if (yourChar.hp === 140){
+						$("#yourHPBar").html('<img src="assets/images/140hp.png" />' + '<p>' + yourChar.hp + "/" + "200" +'</p>');
+					}
+					else if(yourChar.hp === 130){
+						$("#yourHPBar").html('<img src="assets/images/130hp.png" />' + '<p>' + yourChar.hp + "/" + "200" +'</p>');
+					}
+					else if (yourChar.hp === 120){
+						$("#yourHPBar").html('<img src="assets/images/120hp.png" />' + '<p>' + yourChar.hp + "/" + "200" +'</p>');
+					}
+					else if(yourChar.hp === 110){
+						$("#yourHPBar").html('<img src="assets/images/110hp.png" />' + '<p>' + yourChar.hp + "/" + "200" +'</p>');
+					}
+					else if (yourChar.hp === 100){
+						$("#yourHPBar").html('<img src="assets/images/100hp.png" />' + '<p>' + yourChar.hp + "/" + "200" +'</p>');
+					}
+					else if(yourChar.hp === 90){
+						$("#yourHPBar").html('<img src="assets/images/90hp.png" />' + '<p>' + yourChar.hp + "/" + "200" +'</p>');
+					}
+					else if (yourChar.hp === 80){
+						$("#yourHPBar").html('<img src="assets/images/80hp.png" />' + '<p>' + yourChar.hp + "/" + "200" +'</p>');
+					}
+					else if (yourChar.hp === 70){
+						$("#yourHPBar").html('<img src="assets/images/70hp.png" />' + '<p>' + yourChar.hp + "/" + "200" +'</p>');
+					}
+					else if (yourChar.hp === 60){
+						$("#yourHPBar").html('<img src="assets/images/60hp.png" />' + '<p>' + yourChar.hp + "/" + "200" +'</p>');
+					}
+					else if (yourChar.hp === 50){
+						$("#yourHPBar").html('<img src="assets/images/50hp.png" />' + '<p>' + yourChar.hp + "/" + "200" +'</p>');
+					}
+					else if (yourChar.hp === 40){
+						$("#yourHPBar").html('<img src="assets/images/40hp.png" />' + '<p>' + yourChar.hp + "/" + "200" +'</p>');
+					}
+					else if (yourChar.hp === 30){
+						$("#yourHPBar").html('<img src="assets/images/30hp.png" />' + '<p>' + yourChar.hp + "/" + "200" +'</p>');
+					}
+					else if (yourChar.hp === 20){
+						$("#yourHPBar").html('<img src="assets/images/20hp.png" />' + '<p>' + yourChar.hp + "/" + "200" +'</p>');
+					}
+					else if (yourChar.hp === 10){
+						$("#yourHPBar").html('<img src="assets/images/10hp.png" />' + '<p>' + yourChar.hp + "/" + "200" +'</p>');
+					}
+					else if(yourChar.hp <= 0){
+						alert("You lose! Refresh the browser to play again!");
+						$("#yourHPBar").html('<img src="assets/images/0hp.png" />' + '<p>' + yourChar.hp + "/" + "200" +'</p>');
+					} 
+					if (enemyChar.hp === 190){
+						$("#enemyHPBar").html('<img src="assets/images/190hp.png" />' + '<p>' + enemyChar.hp + "/" + "200" +'</p>');
+					}
+					else if (enemyChar.hp === 180){
+						$("#enemyHPBar").html('<img src="assets/images/180hp.png" />' + '<p>' + enemyChar.hp + "/" + "200" +'</p>');
+					}
+					else if (enemyChar.hp === 170){
+						$("#enemyHPBar").html('<img src="assets/images/170hp.png" />' + '<p>' + enemyChar.hp + "/" + "200" +'</p>');
+					}
+					else if (enemyChar.hp === 160){
+						$("#enemyHPBar").html('<img src="assets/images/160hp.png" />' + '<p>' + enemyChar.hp + "/" + "200" +'</p>');
+					}
+					else if (enemyChar.hp === 150){
+						$("#enemyHPBar").html('<img src="assets/images/150hp.png" />' + '<p>' + enemyChar.hp + "/" + "200" +'</p>');
+					}
+					else if (enemyChar.hp === 140){
+						$("#enemyHPBar").html('<img src="assets/images/140hp.png" />' + '<p>' + enemyChar.hp + "/" + "200" +'</p>');
+					}
+					else if (enemyChar.hp === 130){
+						$("#enemyHPBar").html('<img src="assets/images/130hp.png" />' + '<p>' + enemyChar.hp + "/" + "200" +'</p>');
+					}
+					else if (enemyChar.hp === 120){
+						$("#enemyHPBar").html('<img src="assets/images/120hp.png" />' + '<p>' + enemyChar.hp + "/" + "200" +'</p>');
+					}
+					else if (enemyChar.hp === 110){
+						$("#enemyHPBar").html('<img src="assets/images/110hp.png" />' + '<p>' + enemyChar.hp + "/" + "200" +'</p>');
+					}
+					else if (enemyChar.hp === 100){
+						$("#enemyHPBar").html('<img src="assets/images/100hp.png" />' + '<p>' + enemyChar.hp + "/" + "200" +'</p>');
+					}
+					else if (enemyChar.hp === 90){
+						$("#enemyHPBar").html('<img src="assets/images/90hp.png" />' + '<p>' + enemyChar.hp + "/" + "200" +'</p>');
+					}
+					else if (enemyChar.hp === 80){
+						$("#enemyHPBar").html('<img src="assets/images/80hp.png" />' + '<p>' + enemyChar.hp + "/" + "200" +'</p>');
+					}
+					else if (enemyChar.hp === 70){
+						$("#enemyHPBar").html('<img src="assets/images/70hp.png" />' + '<p>' + enemyChar.hp + "/" + "200" +'</p>');
+					}
+					else if (enemyChar.hp === 60){
+						$("#enemyHPBar").html('<img src="assets/images/60hp.png" />' + '<p>' + enemyChar.hp + "/" + "200" +'</p>');
+					}
+					else if (enemyChar.hp === 50){
+						$("#enemyHPBar").html('<img src="assets/images/50hp.png" />' + '<p>' + enemyChar.hp + "/" + "200" +'</p>');
+					}
+					else if (enemyChar.hp === 40){
+						$("#enemyHPBar").html('<img src="assets/images/40hp.png" />' + '<p>' + enemyChar.hp + "/" + "200" +'</p>');
+					}
+					else if (enemyChar.hp === 30){
+						$("#enemyHPBar").html('<img src="assets/images/30hp.png" />' + '<p>' + enemyChar.hp + "/" + "200" +'</p>');
+					}
+					else if (enemyChar.hp === 20){
+						$("#enemyHPBar").html('<img src="assets/images/20hp.png" />' + '<p>' + enemyChar.hp + "/" + "200" +'</p>');
+					}
+					else if (enemyChar.hp === 10){
+						$("#enemyHPBar").html('<img src="assets/images/10hp.png" />' + '<p>' + enemyChar.hp + "/" + "200" +'</p>');
+					}
+					else if (enemyChar.hp <= 0){
+						$("#enemyHPBar").html('<img src="assets/images/0hp.png" />' + '<p>' + enemyChar.hp + "/" + "200" +'</p>');
+						alert("You win! Refresh the browser to play again!");
+					}
+				});
+				$("#useSpecialAttack").on("click", function(){
+					yourChar.femaleSorcererCrit();
+					enemyCrit();
+					function enemyCrit(){
+						var enemyCritChance = Math.floor(Math.random()*10);
+						if(enemyCritHappened){
+							enemyChar.att = enemyChar.att / 2;
+							enemyChar.spAtt = enemyChar.spAtt / 2;
+							enemyCritHappened = false;
+						}
+						if (enemyCritChance === 9){
+							alert("The enemy scored a critical hit!");
+							enemyChar.att = enemyChar.att * 2;
+							enemyChar.spAtt = enemyChar.spAtt * 2;
+							enemyCritHappened = true;
+						}
+					}
+					if (yourChar.hp <= 50){
+						yourChar.femaleAbracadabra();
+					}
+					if (enemyChar === enemyMaleSorcerer && enemyChar.hp <= 50){
+						enemyMaleSorcerer.enemyMaleAbracadabra();
+					} else if (enemyChar === enemyMaleWarrior && enemyChar.hp <= 50){
+						enemyMaleWarrior.enemyMaleMightySword();
+					} if (enemyChar === enemyFemaleSorcerer && enemyChar.hp <= 50){
+						enemyFemaleSorcerer.enemyFemaleAbracadabra();
+					} else if (enemyChar === enemyFemaleWarrior && enemyChar.hp <= 50){
+						enemyMaleWarrior.enemyFemaleMightySword();
+					}
+					var attackOrSpecialAttack = Math.floor(Math.random()*2);
+					if(attackOrSpecialAttack === 0){
+						console.log("The enemy used a physical attack!");
+						yourChar.hp = yourChar.hp - enemyChar.att;
+					} else if (attackOrSpecialAttack === 1){
+						console.log("The enemy used a special attack!");
+						yourChar.hp = yourChar.hp - enemyChar.spAtt;
+					}
+					enemyChar.hp = enemyChar.hp - yourChar.spAtt;
+					console.log("--------------------");
+					console.log("your current hp is: " + yourChar.hp);
+					console.log("the enemy's current hp is: " + enemyChar.hp);
+					console.log("--------------------");
+					if(yourChar.hp === 190){
+						$("#yourHPBar").html('<img src="assets/images/190hp.png" />' + '<p>' + yourChar.hp + "/" + "200" +'</p>');
+					}
+					else if (yourChar.hp === 180){
+						$("#yourHPBar").html('<img src="assets/images/180hp.png" />' + '<p>' + yourChar.hp + "/" + "200" +'</p>');
+					}
+					else if(yourChar.hp === 170){
+						$("#yourHPBar").html('<img src="assets/images/170hp.png" />' + '<p>' + yourChar.hp + "/" + "200" +'</p>');
+					}
+					else if (yourChar.hp === 160){
+						$("#yourHPBar").html('<img src="assets/images/160hp.png" />' + '<p>' + yourChar.hp + "/" + "200" +'</p>');
+					}
+					else if(yourChar.hp === 150){
+						$("#yourHPBar").html('<img src="assets/images/150hp.png" />' + '<p>' + yourChar.hp + "/" + "200" +'</p>');
+					}
+					else if (yourChar.hp === 140){
+						$("#yourHPBar").html('<img src="assets/images/140hp.png" />' + '<p>' + yourChar.hp + "/" + "200" +'</p>');
+					}
+					else if(yourChar.hp === 130){
+						$("#yourHPBar").html('<img src="assets/images/130hp.png" />' + '<p>' + yourChar.hp + "/" + "200" +'</p>');
+					}
+					else if (yourChar.hp === 120){
+						$("#yourHPBar").html('<img src="assets/images/120hp.png" />' + '<p>' + yourChar.hp + "/" + "200" +'</p>');
+					}
+					else if(yourChar.hp === 110){
+						$("#yourHPBar").html('<img src="assets/images/110hp.png" />' + '<p>' + yourChar.hp + "/" + "200" +'</p>');
+					}
+					else if (yourChar.hp === 100){
+						$("#yourHPBar").html('<img src="assets/images/100hp.png" />' + '<p>' + yourChar.hp + "/" + "200" +'</p>');
+					}
+					else if(yourChar.hp === 90){
+						$("#yourHPBar").html('<img src="assets/images/90hp.png" />' + '<p>' + yourChar.hp + "/" + "200" +'</p>');
+					}
+					else if (yourChar.hp === 80){
+						$("#yourHPBar").html('<img src="assets/images/80hp.png" />' + '<p>' + yourChar.hp + "/" + "200" +'</p>');
+					}
+					else if (yourChar.hp === 70){
+						$("#yourHPBar").html('<img src="assets/images/70hp.png" />' + '<p>' + yourChar.hp + "/" + "200" +'</p>');
+					}
+					else if (yourChar.hp === 60){
+						$("#yourHPBar").html('<img src="assets/images/60hp.png" />' + '<p>' + yourChar.hp + "/" + "200" +'</p>');
+					}
+					else if (yourChar.hp === 50){
+						$("#yourHPBar").html('<img src="assets/images/50hp.png" />' + '<p>' + yourChar.hp + "/" + "200" +'</p>');
+					}
+					else if (yourChar.hp === 40){
+						$("#yourHPBar").html('<img src="assets/images/40hp.png" />' + '<p>' + yourChar.hp + "/" + "200" +'</p>');
+					}
+					else if (yourChar.hp === 30){
+						$("#yourHPBar").html('<img src="assets/images/30hp.png" />' + '<p>' + yourChar.hp + "/" + "200" +'</p>');
+					}
+					else if (yourChar.hp === 20){
+						$("#yourHPBar").html('<img src="assets/images/20hp.png" />' + '<p>' + yourChar.hp + "/" + "200" +'</p>');
+					}
+					else if (yourChar.hp === 10){
+						$("#yourHPBar").html('<img src="assets/images/10hp.png" />' + '<p>' + yourChar.hp + "/" + "200" +'</p>');
+					}
+					else if(yourChar.hp <= 0){
+						alert("You lose! Refresh the browser to play again!");
+						$("#yourHPBar").html('<img src="assets/images/0hp.png" />' + '<p>' + yourChar.hp + "/" + "200" +'</p>');
+					} 
+					if (enemyChar.hp === 190){
+						$("#enemyHPBar").html('<img src="assets/images/190hp.png" />' + '<p>' + enemyChar.hp + "/" + "200" +'</p>');
+					}
+					else if (enemyChar.hp === 180){
+						$("#enemyHPBar").html('<img src="assets/images/180hp.png" />' + '<p>' + enemyChar.hp + "/" + "200" +'</p>');
+					}
+					else if (enemyChar.hp === 170){
+						$("#enemyHPBar").html('<img src="assets/images/170hp.png" />' + '<p>' + enemyChar.hp + "/" + "200" +'</p>');
+					}
+					else if (enemyChar.hp === 160){
+						$("#enemyHPBar").html('<img src="assets/images/160hp.png" />' + '<p>' + enemyChar.hp + "/" + "200" +'</p>');
+					}
+					else if (enemyChar.hp === 150){
+						$("#enemyHPBar").html('<img src="assets/images/150hp.png" />' + '<p>' + enemyChar.hp + "/" + "200" +'</p>');
+					}
+					else if (enemyChar.hp === 140){
+						$("#enemyHPBar").html('<img src="assets/images/140hp.png" />' + '<p>' + enemyChar.hp + "/" + "200" +'</p>');
+					}
+					else if (enemyChar.hp === 130){
+						$("#enemyHPBar").html('<img src="assets/images/130hp.png" />' + '<p>' + enemyChar.hp + "/" + "200" +'</p>');
+					}
+					else if (enemyChar.hp === 120){
+						$("#enemyHPBar").html('<img src="assets/images/120hp.png" />' + '<p>' + enemyChar.hp + "/" + "200" +'</p>');
+					}
+					else if (enemyChar.hp === 110){
+						$("#enemyHPBar").html('<img src="assets/images/110hp.png" />' + '<p>' + enemyChar.hp + "/" + "200" +'</p>');
+					}
+					else if (enemyChar.hp === 100){
+						$("#enemyHPBar").html('<img src="assets/images/100hp.png" />' + '<p>' + enemyChar.hp + "/" + "200" +'</p>');
+					}
+					else if (enemyChar.hp === 90){
+						$("#enemyHPBar").html('<img src="assets/images/90hp.png" />' + '<p>' + enemyChar.hp + "/" + "200" +'</p>');
+					}
+					else if (enemyChar.hp === 80){
+						$("#enemyHPBar").html('<img src="assets/images/80hp.png" />' + '<p>' + enemyChar.hp + "/" + "200" +'</p>');
+					}
+					else if (enemyChar.hp === 70){
+						$("#enemyHPBar").html('<img src="assets/images/70hp.png" />' + '<p>' + enemyChar.hp + "/" + "200" +'</p>');
+					}
+					else if (enemyChar.hp === 60){
+						$("#enemyHPBar").html('<img src="assets/images/60hp.png" />' + '<p>' + enemyChar.hp + "/" + "200" +'</p>');
+					}
+					else if (enemyChar.hp === 50){
+						$("#enemyHPBar").html('<img src="assets/images/50hp.png" />' + '<p>' + enemyChar.hp + "/" + "200" +'</p>');
+					}
+					else if (enemyChar.hp === 40){
+						$("#enemyHPBar").html('<img src="assets/images/40hp.png" />' + '<p>' + enemyChar.hp + "/" + "200" +'</p>');
+					}
+					else if (enemyChar.hp === 30){
+						$("#enemyHPBar").html('<img src="assets/images/30hp.png" />' + '<p>' + enemyChar.hp + "/" + "200" +'</p>');
+					}
+					else if (enemyChar.hp === 20){
+						$("#enemyHPBar").html('<img src="assets/images/20hp.png" />' + '<p>' + enemyChar.hp + "/" + "200" +'</p>');
+					}
+					else if (enemyChar.hp === 10){
+						$("#enemyHPBar").html('<img src="assets/images/10hp.png" />' + '<p>' + enemyChar.hp + "/" + "200" +'</p>');
+					}
+					else if (enemyChar.hp <= 0){
+						$("#enemyHPBar").html('<img src="assets/images/0hp.png" />' + '<p>' + enemyChar.hp + "/" + "200" +'</p>');
+						alert("You win! Refresh the browser to play again!");
+					}
+				});
+			}
+		});
+
+		$("#femaleWarrior").on("click", function(){
+			console.log("--------------------");
+			if (playerSelected && playerWasAlreadySelected){
+				console.log("Was the player selected? " + playerSelected);
+				console.log("Was the player already selected? " + playerWasAlreadySelected);
+				console.log("--------------------");
+				return;
+			}
+			$("#yourPlayer").prepend('<img src="assets/images/female_warrior.jpg" />');
+			$("#yourHPBar").html('<img src="assets/images/200hp.png" />');
+			$("#enemyHPBar").html('<img src="assets/images/200hp.png" />');
+			yourChar = femaleWarrior;
+			$("#displayYourStats").append('<p>' + yourChar.name + '</p>');
+			$("#displayYourStats").append('<p>' + "Attack: " + yourChar.att + '</p>');
+			$("#displayYourStats").append('<p>' + "Special Attack: " + yourChar.spAtt + '</p>');
+			console.log("Your player is: " + yourChar.name);
+			console.log("--------------------");
+			playerSelected = true;
+			playerWasAlreadySelected = true;
+			if(playerSelected){
+				var enemyChar = Math.floor(Math.random()*4);
+				enemySelected = true;
+				if(enemyChar === 0 && enemySelected){
+					$("#enemyPlayer").prepend('<img src="assets/images/female_sorcerer.jpg" />');
+					enemyChar = enemyFemaleSorcerer;
+					$("#displayEnemyStats").append('<p>' + enemyChar.name + '</p>');
+					$("#displayEnemyStats").append('<p>' + "Attack: " + enemyChar.att + '</p>');
+					$("#displayEnemyStats").append('<p>' + "Special Attack: " + enemyChar.spAtt + '</p>');
+					console.log("Your enemy is: " + enemyChar.name);
+					console.log("--------------------");
+				} else if (enemyChar === 1 && enemySelected) {
+					$("#enemyPlayer").prepend('<img src="assets/images/male_warrior.jpg" />');
+					enemyChar = enemyMaleWarrior;
+					$("#displayEnemyStats").append('<p>' + enemyChar.name + '</p>');
+					$("#displayEnemyStats").append('<p>' + "Attack: " + enemyChar.att + '</p>');
+					$("#displayEnemyStats").append('<p>' + "Special Attack: " + enemyChar.spAtt + '</p>');
+					console.log("Your enemy is: " + enemyChar.name)
+					console.log("--------------------");
+				} else if (enemyChar === 2 && enemySelected) {
+					$("#enemyPlayer").prepend('<img src="assets/images/male_sorcerer.jpg" />');
+					enemyChar = enemyMaleSorcerer;
+					$("#displayEnemyStats").append('<p>' + enemyChar.name + '</p>');
+					$("#displayEnemyStats").append('<p>' + "Attack: " + enemyChar.att + '</p>');
+					$("#displayEnemyStats").append('<p>' + "Special Attack: " + enemyChar.spAtt + '</p>');
+					console.log("Your enemy is: " + enemyChar.name)
+					console.log("--------------------");
+				} else if (enemyChar === 3 && enemySelected) {
+					$("#enemyPlayer").prepend('<img src="assets/images/female_warrior.jpg" />');
+					enemyChar = enemyFemaleWarrior;
+					$("#displayEnemyStats").append('<p>' + enemyChar.name + '</p>');
+					$("#displayEnemyStats").append('<p>' + "Attack: " + enemyChar.att + '</p>');
+					$("#displayEnemyStats").append('<p>' + "Special Attack: " + enemyChar.spAtt + '</p>');
+					console.log("Your enemy is: " + enemyChar.name)
+					console.log("--------------------");
+				} 
+				$("#useAttack").on("click", function(){
+					yourChar.femaleWarriorCrit();
+					enemyCrit();
+					function enemyCrit(){
+						var enemyCritChance = Math.floor(Math.random()*10);
+						if(enemyCritHappened){
+							enemyChar.att = enemyChar.att / 2;
+							enemyChar.spAtt = enemyChar.spAtt / 2;
+							enemyCritHappened = false;
+						}
+						if (enemyCritChance === 9){
+							alert("The enemy scored a critical hit!");
+							enemyChar.att = enemyChar.att * 2;
+							enemyChar.spAtt = enemyChar.spAtt * 2;
+							enemyCritHappened = true;
+						}
+					}
+					if (enemyChar === enemyMaleSorcerer && enemyChar.hp <= 50){
+						enemyMaleSorcerer.enemyMaleAbracadabra();
+					} else if (enemyChar === enemyMaleWarrior && enemyChar.hp <= 50){
+						enemyMaleWarrior.enemyMaleMightySword();
+					} if (enemyChar === enemyFemaleSorcerer && enemyChar.hp <= 50){
+						enemyFemaleSorcerer.enemyFemaleAbracadabra();
+					} else if (enemyChar === enemyFemaleWarrior && enemyChar.hp <= 50){
+						enemyMaleWarrior.enemyFemaleMightySword();
+					}	
+					var attackOrSpecialAttack = Math.floor(Math.random()*2);
+					if(attackOrSpecialAttack === 0){
+						console.log("The enemy used a physical attack!");
+						yourChar.hp = yourChar.hp - enemyChar.att;
+					} else if (attackOrSpecialAttack === 1){
+						console.log("The enemy used a special attack!");
+						yourChar.hp = yourChar.hp - enemyChar.spAtt;
+					}
+					enemyChar.hp = enemyChar.hp - yourChar.att;
+					console.log("--------------------");
+					console.log("your current hp is: " + yourChar.hp);
+					console.log("the enemy's current hp is: " + enemyChar.hp);
+					console.log("--------------------");
+					if(yourChar.hp === 190){
+						$("#yourHPBar").html('<img src="assets/images/190hp.png" />' + '<p>' + yourChar.hp + "/" + "200" +'</p>');
+					}
+					else if (yourChar.hp === 180){
+						$("#yourHPBar").html('<img src="assets/images/180hp.png" />' + '<p>' + yourChar.hp + "/" + "200" +'</p>');
+					}
+					else if(yourChar.hp === 170){
+						$("#yourHPBar").html('<img src="assets/images/170hp.png" />' + '<p>' + yourChar.hp + "/" + "200" +'</p>');
+					}
+					else if (yourChar.hp === 160){
+						$("#yourHPBar").html('<img src="assets/images/160hp.png" />' + '<p>' + yourChar.hp + "/" + "200" +'</p>');
+					}
+					else if(yourChar.hp === 150){
+						$("#yourHPBar").html('<img src="assets/images/150hp.png" />' + '<p>' + yourChar.hp + "/" + "200" +'</p>');
+					}
+					else if (yourChar.hp === 140){
+						$("#yourHPBar").html('<img src="assets/images/140hp.png" />' + '<p>' + yourChar.hp + "/" + "200" +'</p>');
+					}
+					else if(yourChar.hp === 130){
+						$("#yourHPBar").html('<img src="assets/images/130hp.png" />' + '<p>' + yourChar.hp + "/" + "200" +'</p>');
+					}
+					else if (yourChar.hp === 120){
+						$("#yourHPBar").html('<img src="assets/images/120hp.png" />' + '<p>' + yourChar.hp + "/" + "200" +'</p>');
+					}
+					else if(yourChar.hp === 110){
+						$("#yourHPBar").html('<img src="assets/images/110hp.png" />' + '<p>' + yourChar.hp + "/" + "200" +'</p>');
+					}
+					else if (yourChar.hp === 100){
+						$("#yourHPBar").html('<img src="assets/images/100hp.png" />' + '<p>' + yourChar.hp + "/" + "200" +'</p>');
+					}
+					else if(yourChar.hp === 90){
+						$("#yourHPBar").html('<img src="assets/images/90hp.png" />' + '<p>' + yourChar.hp + "/" + "200" +'</p>');
+					}
+					else if (yourChar.hp === 80){
+						$("#yourHPBar").html('<img src="assets/images/80hp.png" />' + '<p>' + yourChar.hp + "/" + "200" +'</p>');
+					}
+					else if (yourChar.hp === 70){
+						$("#yourHPBar").html('<img src="assets/images/70hp.png" />' + '<p>' + yourChar.hp + "/" + "200" +'</p>');
+					}
+					else if (yourChar.hp === 60){
+						$("#yourHPBar").html('<img src="assets/images/60hp.png" />' + '<p>' + yourChar.hp + "/" + "200" +'</p>');
+					}
+					else if (yourChar.hp === 50){
+						$("#yourHPBar").html('<img src="assets/images/50hp.png" />' + '<p>' + yourChar.hp + "/" + "200" +'</p>');
+					}
+					else if (yourChar.hp === 40){
+						$("#yourHPBar").html('<img src="assets/images/40hp.png" />' + '<p>' + yourChar.hp + "/" + "200" +'</p>');
+					}
+					else if (yourChar.hp === 30){
+						$("#yourHPBar").html('<img src="assets/images/30hp.png" />' + '<p>' + yourChar.hp + "/" + "200" +'</p>');
+					}
+					else if (yourChar.hp === 20){
+						$("#yourHPBar").html('<img src="assets/images/20hp.png" />' + '<p>' + yourChar.hp + "/" + "200" +'</p>');
+					}
+					else if (yourChar.hp === 10){
+						$("#yourHPBar").html('<img src="assets/images/10hp.png" />' + '<p>' + yourChar.hp + "/" + "200" +'</p>');
+					}
+					else if(yourChar.hp <= 0){
+						alert("You lose! Refresh the browser to play again!");
+						$("#yourHPBar").html('<img src="assets/images/0hp.png" />' + '<p>' + yourChar.hp + "/" + "200" +'</p>');
+					} 
+					if (enemyChar.hp === 190){
+						$("#enemyHPBar").html('<img src="assets/images/190hp.png" />' + '<p>' + enemyChar.hp + "/" + "200" +'</p>');
+					}
+					else if (enemyChar.hp === 180){
+						$("#enemyHPBar").html('<img src="assets/images/180hp.png" />' + '<p>' + enemyChar.hp + "/" + "200" +'</p>');
+					}
+					else if (enemyChar.hp === 170){
+						$("#enemyHPBar").html('<img src="assets/images/170hp.png" />' + '<p>' + enemyChar.hp + "/" + "200" +'</p>');
+					}
+					else if (enemyChar.hp === 160){
+						$("#enemyHPBar").html('<img src="assets/images/160hp.png" />' + '<p>' + enemyChar.hp + "/" + "200" +'</p>');
+					}
+					else if (enemyChar.hp === 150){
+						$("#enemyHPBar").html('<img src="assets/images/150hp.png" />' + '<p>' + enemyChar.hp + "/" + "200" +'</p>');
+					}
+					else if (enemyChar.hp === 140){
+						$("#enemyHPBar").html('<img src="assets/images/140hp.png" />' + '<p>' + enemyChar.hp + "/" + "200" +'</p>');
+					}
+					else if (enemyChar.hp === 130){
+						$("#enemyHPBar").html('<img src="assets/images/130hp.png" />' + '<p>' + enemyChar.hp + "/" + "200" +'</p>');
+					}
+					else if (enemyChar.hp === 120){
+						$("#enemyHPBar").html('<img src="assets/images/120hp.png" />' + '<p>' + enemyChar.hp + "/" + "200" +'</p>');
+					}
+					else if (enemyChar.hp === 110){
+						$("#enemyHPBar").html('<img src="assets/images/110hp.png" />' + '<p>' + enemyChar.hp + "/" + "200" +'</p>');
+					}
+					else if (enemyChar.hp === 100){
+						$("#enemyHPBar").html('<img src="assets/images/100hp.png" />' + '<p>' + enemyChar.hp + "/" + "200" +'</p>');
+					}
+					else if (enemyChar.hp === 90){
+						$("#enemyHPBar").html('<img src="assets/images/90hp.png" />' + '<p>' + enemyChar.hp + "/" + "200" +'</p>');
+					}
+					else if (enemyChar.hp === 80){
+						$("#enemyHPBar").html('<img src="assets/images/80hp.png" />' + '<p>' + enemyChar.hp + "/" + "200" +'</p>');
+					}
+					else if (enemyChar.hp === 70){
+						$("#enemyHPBar").html('<img src="assets/images/70hp.png" />' + '<p>' + enemyChar.hp + "/" + "200" +'</p>');
+					}
+					else if (enemyChar.hp === 60){
+						$("#enemyHPBar").html('<img src="assets/images/60hp.png" />' + '<p>' + enemyChar.hp + "/" + "200" +'</p>');
+					}
+					else if (enemyChar.hp === 50){
+						$("#enemyHPBar").html('<img src="assets/images/50hp.png" />' + '<p>' + enemyChar.hp + "/" + "200" +'</p>');
+					}
+					else if (enemyChar.hp === 40){
+						$("#enemyHPBar").html('<img src="assets/images/40hp.png" />' + '<p>' + enemyChar.hp + "/" + "200" +'</p>');
+					}
+					else if (enemyChar.hp === 30){
+						$("#enemyHPBar").html('<img src="assets/images/30hp.png" />' + '<p>' + enemyChar.hp + "/" + "200" +'</p>');
+					}
+					else if (enemyChar.hp === 20){
+						$("#enemyHPBar").html('<img src="assets/images/20hp.png" />' + '<p>' + enemyChar.hp + "/" + "200" +'</p>');
+					}
+					else if (enemyChar.hp === 10){
+						$("#enemyHPBar").html('<img src="assets/images/10hp.png" />' + '<p>' + enemyChar.hp + "/" + "200" +'</p>');
+					}
+					else if (enemyChar.hp <= 0){
+						$("#enemyHPBar").html('<img src="assets/images/0hp.png" />' + '<p>' + enemyChar.hp + "/" + "200" +'</p>');
+						alert("You win! Refresh the browser to play again!");
+					}
+				});
+				$("#useSpecialAttack").on("click", function(){
+					yourChar.femaleWarriorCrit();
+					enemyCrit();
+					function enemyCrit(){
+						var enemyCritChance = Math.floor(Math.random()*10);
+						if(enemyCritHappened){
+							enemyChar.att = enemyChar.att / 2;
+							enemyChar.spAtt = enemyChar.spAtt / 2;
+							enemyCritHappened = false;
+						}
+						if (enemyCritChance === 9){
+							alert("The enemy scored a critical hit!");
+							enemyChar.att = enemyChar.att * 2;
+							enemyChar.spAtt = enemyChar.spAtt * 2;
+							enemyCritHappened = true;
+						}
+					}
+					if (yourChar.hp <= 50){
+						yourChar.femaleMightySword();
+					}
+					if (enemyChar === enemyMaleSorcerer && enemyChar.hp <= 50){
+						enemyMaleSorcerer.enemyMaleAbracadabra();
+					} else if (enemyChar === enemyFemaleWarrior && enemyChar.hp <= 50){
+						enemyMaleWarrior.enemyFemaleMightySword();
+					} else if (enemyChar === enemyMaleWarrior && enemyChar.hp <= 50){
+						enemyMaleWarrior.enemyMaleMightySword();
+					} else if (enemyChar === enemyFemaleSorcerer && enemyChar.hp <= 50){
+						enemyMaleWarrior.enemyFemaleAbracadabra();
+					}
+					var attackOrSpecialAttack = Math.floor(Math.random()*2);
+					if(attackOrSpecialAttack === 0){
+						console.log("The enemy used a physical attack!");
+						yourChar.hp = yourChar.hp - enemyChar.att;
+					} else if (attackOrSpecialAttack === 1){
+						console.log("The enemy used a special attack!");
+						yourChar.hp = yourChar.hp - enemyChar.spAtt;
+					}
+					enemyChar.hp = enemyChar.hp - yourChar.spAtt;
+					console.log("--------------------");
+					console.log("your current hp is: " + yourChar.hp);
+					console.log("the enemy's current hp is: " + enemyChar.hp);
+					console.log("--------------------");
+					if(yourChar.hp === 190){
+						$("#yourHPBar").html('<img src="assets/images/190hp.png" />' + '<p>' + yourChar.hp + "/" + "200" +'</p>');
+					}
+					else if (yourChar.hp === 180){
+						$("#yourHPBar").html('<img src="assets/images/180hp.png" />' + '<p>' + yourChar.hp + "/" + "200" +'</p>');
+					}
+					else if(yourChar.hp === 170){
+						$("#yourHPBar").html('<img src="assets/images/170hp.png" />' + '<p>' + yourChar.hp + "/" + "200" +'</p>');
+					}
+					else if (yourChar.hp === 160){
+						$("#yourHPBar").html('<img src="assets/images/160hp.png" />' + '<p>' + yourChar.hp + "/" + "200" +'</p>');
+					}
+					else if(yourChar.hp === 150){
+						$("#yourHPBar").html('<img src="assets/images/150hp.png" />' + '<p>' + yourChar.hp + "/" + "200" +'</p>');
+					}
+					else if (yourChar.hp === 140){
+						$("#yourHPBar").html('<img src="assets/images/140hp.png" />' + '<p>' + yourChar.hp + "/" + "200" +'</p>');
+					}
+					else if(yourChar.hp === 130){
+						$("#yourHPBar").html('<img src="assets/images/130hp.png" />' + '<p>' + yourChar.hp + "/" + "200" +'</p>');
+					}
+					else if (yourChar.hp === 120){
+						$("#yourHPBar").html('<img src="assets/images/120hp.png" />' + '<p>' + yourChar.hp + "/" + "200" +'</p>');
+					}
+					else if(yourChar.hp === 110){
+						$("#yourHPBar").html('<img src="assets/images/110hp.png" />' + '<p>' + yourChar.hp + "/" + "200" +'</p>');
+					}
+					else if (yourChar.hp === 100){
+						$("#yourHPBar").html('<img src="assets/images/100hp.png" />' + '<p>' + yourChar.hp + "/" + "200" +'</p>');
+					}
+					else if(yourChar.hp === 90){
+						$("#yourHPBar").html('<img src="assets/images/90hp.png" />' + '<p>' + yourChar.hp + "/" + "200" +'</p>');
+					}
+					else if (yourChar.hp === 80){
+						$("#yourHPBar").html('<img src="assets/images/80hp.png" />' + '<p>' + yourChar.hp + "/" + "200" +'</p>');
+					}
+					else if (yourChar.hp === 70){
+						$("#yourHPBar").html('<img src="assets/images/70hp.png" />' + '<p>' + yourChar.hp + "/" + "200" +'</p>');
+					}
+					else if (yourChar.hp === 60){
+						$("#yourHPBar").html('<img src="assets/images/60hp.png" />' + '<p>' + yourChar.hp + "/" + "200" +'</p>');
+					}
+					else if (yourChar.hp === 50){
+						$("#yourHPBar").html('<img src="assets/images/50hp.png" />' + '<p>' + yourChar.hp + "/" + "200" +'</p>');
+					}
+					else if (yourChar.hp === 40){
+						$("#yourHPBar").html('<img src="assets/images/40hp.png" />' + '<p>' + yourChar.hp + "/" + "200" +'</p>');
+					}
+					else if (yourChar.hp === 30){
+						$("#yourHPBar").html('<img src="assets/images/30hp.png" />' + '<p>' + yourChar.hp + "/" + "200" +'</p>');
+					}
+					else if (yourChar.hp === 20){
+						$("#yourHPBar").html('<img src="assets/images/20hp.png" />' + '<p>' + yourChar.hp + "/" + "200" +'</p>');
+					}
+					else if (yourChar.hp === 10){
+						$("#yourHPBar").html('<img src="assets/images/10hp.png" />' + '<p>' + yourChar.hp + "/" + "200" +'</p>');
+					}
+					else if(yourChar.hp <= 0){
+						alert("You lose! Refresh the browser to play again!");
+						$("#yourHPBar").html('<img src="assets/images/0hp.png" />' + '<p>' + yourChar.hp + "/" + "200" +'</p>');
+					} 
+					if (enemyChar.hp === 190){
+						$("#enemyHPBar").html('<img src="assets/images/190hp.png" />' + '<p>' + enemyChar.hp + "/" + "200" +'</p>');
+					}
+					else if (enemyChar.hp === 180){
+						$("#enemyHPBar").html('<img src="assets/images/180hp.png" />' + '<p>' + enemyChar.hp + "/" + "200" +'</p>');
+					}
+					else if (enemyChar.hp === 170){
+						$("#enemyHPBar").html('<img src="assets/images/170hp.png" />' + '<p>' + enemyChar.hp + "/" + "200" +'</p>');
+					}
+					else if (enemyChar.hp === 160){
+						$("#enemyHPBar").html('<img src="assets/images/160hp.png" />' + '<p>' + enemyChar.hp + "/" + "200" +'</p>');
+					}
+					else if (enemyChar.hp === 150){
+						$("#enemyHPBar").html('<img src="assets/images/150hp.png" />' + '<p>' + enemyChar.hp + "/" + "200" +'</p>');
+					}
+					else if (enemyChar.hp === 140){
+						$("#enemyHPBar").html('<img src="assets/images/140hp.png" />' + '<p>' + enemyChar.hp + "/" + "200" +'</p>');
+					}
+					else if (enemyChar.hp === 130){
+						$("#enemyHPBar").html('<img src="assets/images/130hp.png" />' + '<p>' + enemyChar.hp + "/" + "200" +'</p>');
+					}
+					else if (enemyChar.hp === 120){
+						$("#enemyHPBar").html('<img src="assets/images/120hp.png" />' + '<p>' + enemyChar.hp + "/" + "200" +'</p>');
+					}
+					else if (enemyChar.hp === 110){
+						$("#enemyHPBar").html('<img src="assets/images/110hp.png" />' + '<p>' + enemyChar.hp + "/" + "200" +'</p>');
+					}
+					else if (enemyChar.hp === 100){
+						$("#enemyHPBar").html('<img src="assets/images/100hp.png" />' + '<p>' + enemyChar.hp + "/" + "200" +'</p>');
+					}
+					else if (enemyChar.hp === 90){
+						$("#enemyHPBar").html('<img src="assets/images/90hp.png" />' + '<p>' + enemyChar.hp + "/" + "200" +'</p>');
+					}
+					else if (enemyChar.hp === 80){
+						$("#enemyHPBar").html('<img src="assets/images/80hp.png" />' + '<p>' + enemyChar.hp + "/" + "200" +'</p>');
+					}
+					else if (enemyChar.hp === 70){
+						$("#enemyHPBar").html('<img src="assets/images/70hp.png" />' + '<p>' + enemyChar.hp + "/" + "200" +'</p>');
+					}
+					else if (enemyChar.hp === 60){
+						$("#enemyHPBar").html('<img src="assets/images/60hp.png" />' + '<p>' + enemyChar.hp + "/" + "200" +'</p>');
+					}
+					else if (enemyChar.hp === 50){
+						$("#enemyHPBar").html('<img src="assets/images/50hp.png" />' + '<p>' + enemyChar.hp + "/" + "200" +'</p>');
+					}
+					else if (enemyChar.hp === 40){
+						$("#enemyHPBar").html('<img src="assets/images/40hp.png" />' + '<p>' + enemyChar.hp + "/" + "200" +'</p>');
+					}
+					else if (enemyChar.hp === 30){
+						$("#enemyHPBar").html('<img src="assets/images/30hp.png" />' + '<p>' + enemyChar.hp + "/" + "200" +'</p>');
+					}
+					else if (enemyChar.hp === 20){
+						$("#enemyHPBar").html('<img src="assets/images/20hp.png" />' + '<p>' + enemyChar.hp + "/" + "200" +'</p>');
+					}
+					else if (enemyChar.hp === 10){
+						$("#enemyHPBar").html('<img src="assets/images/10hp.png" />' + '<p>' + enemyChar.hp + "/" + "200" +'</p>');
+					}
+					else if (enemyChar.hp <= 0){
+						$("#enemyHPBar").html('<img src="assets/images/0hp.png" />' + '<p>' + enemyChar.hp + "/" + "200" +'</p>');
+						alert("You win! Refresh the browser to play again!");
+					}
+				});
+			}
+		});
+
+		$("#maleWarrior").on("click", function(){
+			if (playerSelected && playerWasAlreadySelected){
+				console.log("--------------------");
+				console.log("Was the player selected? " + playerSelected);
+				console.log("Was the player already selected? " + playerWasAlreadySelected);
+				console.log("--------------------");
+				return;
+			}
+			$("#yourPlayer").prepend('<img src="assets/images/male_warrior.jpg" />');
+			$("#yourHPBar").html('<img src="assets/images/200hp.png" />');
+			$("#enemyHPBar").html('<img src="assets/images/200hp.png" />');
+			yourChar = maleWarrior;
+			$("#displayYourStats").append('<p>' + yourChar.name + '</p>');
+			$("#displayYourStats").append('<p>' + "Attack: " + yourChar.att + '</p>');
+			$("#displayYourStats").append('<p>' + "Special Attack: " + yourChar.spAtt + '</p>');
+			console.log("Your player is: " + yourChar.name);
+			console.log("--------------------");
+			playerSelected = true;
+			playerWasAlreadySelected = true;
+			if(playerSelected){
+				var enemyChar = Math.floor(Math.random()*2);
+				enemySelected = true;	
+				if(enemyChar === 0 && enemySelected){
+					$("#enemyPlayer").prepend('<img src="assets/images/female_sorcerer.jpg" />');
+					enemyChar = enemyFemaleSorcerer;
+					$("#displayEnemyStats").append('<p>' + enemyChar.name + '</p>');
+					$("#displayEnemyStats").append('<p>' + "Attack: " + enemyChar.att + '</p>');
+					$("#displayEnemyStats").append('<p>' + "Special Attack: " + enemyChar.spAtt + '</p>');
+					console.log("--------------------");
+					console.log("Your enemy is: " + enemyChar.name);
+					console.log("--------------------");
+				} else if (enemyChar === 1 && enemySelected) {
+					$("#enemyPlayer").prepend('<img src="assets/images/male_warrior.jpg" />');
+					enemyChar = enemyMaleWarrior;
+					$("#displayEnemyStats").append('<p>' + enemyChar.name + '</p>');
+					$("#displayEnemyStats").append('<p>' + "Attack: " + enemyChar.att + '</p>');
+					$("#displayEnemyStats").append('<p>' + "Special Attack: " + enemyChar.spAtt + '</p>');
+					console.log("--------------------");
+					console.log("Your enemy is: " + enemyChar.name);
+					console.log("--------------------");
+				} if(enemyChar === 2 && enemySelected){
+					$("#enemyPlayer").prepend('<img src="assets/images/male_sorcerer.jpg" />');
+					enemyChar = enemyMaleSorcerer;
+					$("#displayEnemyStats").append('<p>' + enemyChar.name + '</p>');
+					$("#displayEnemyStats").append('<p>' + "Attack: " + enemyChar.att + '</p>');
+					$("#displayEnemyStats").append('<p>' + "Special Attack: " + enemyChar.spAtt + '</p>');
+					console.log("--------------------");
+					console.log("Your enemy is: " + enemyChar.name);
+					console.log("--------------------");
+				} else if (enemyChar === 3 && enemySelected) {
+					$("#enemyPlayer").prepend('<img src="assets/images/femmale_warrior.jpg" />');
+					enemyChar = enemyFemaleWarrior;
+					$("#displayEnemyStats").append('<p>' + enemyChar.name + '</p>');
+					$("#displayEnemyStats").append('<p>' + "Attack: " + enemyChar.att + '</p>');
+					$("#displayEnemyStats").append('<p>' + "Special Attack: " + enemyChar.spAtt + '</p>');
+					console.log("--------------------");
+					console.log("Your enemy is: " + enemyChar.name);
+					console.log("--------------------");
+				}
+				$("#useAttack").on("click", function(){
+					yourChar.maleWarriorCrit();
+					enemyCrit();
+					function enemyCrit(){
+						var enemyCritChance = Math.floor(Math.random()*10);
+						if(enemyCritHappened){
+							enemyChar.att = enemyChar.att / 2;
+							enemyChar.spAtt = enemyChar.spAtt / 2;
+							enemyCritHappened = false;
+						}
+						if (enemyCritChance === 9){
+							alert("The enemy scored a critical hit!");
+							enemyChar.att = enemyChar.att * 2;
+							enemyChar.spAtt = enemyChar.spAtt * 2;
+							enemyCritHappened = true;
+						}
+					}
+					if (yourChar.hp <= 50){
+						yourChar.maleMightySword();
+					}
+					if (enemyChar === enemyMaleSorcerer && enemyChar.hp <= 50){
+						enemyMaleSorcerer.enemyMaleAbracadabra();
+					} else if (enemyChar === enemyMaleWarrior && enemyChar.hp <= 50){
+						enemyMaleWarrior.enemyMaleMightySword();
+					} if (enemyChar === enemyFemaleSorcerer && enemyChar.hp <= 50){
+						enemyFemaleSorcerer.enemyFemaleAbracadabra();
+					} else if (enemyChar === enemyFemaleWarrior && enemyChar.hp <= 50){
+						enemyFemaleWarrior.enemyFemaleMightySword();
+					}
+					var attackOrSpecialAttack = Math.floor(Math.random()*2);
+					if(attackOrSpecialAttack === 0){
+						console.log("The enemy used a physical attack!");
+						yourChar.hp = yourChar.hp - enemyChar.att;
+					} else if (attackOrSpecialAttack === 1){
+						console.log("The enemy used a special attack!");
+						yourChar.hp = yourChar.hp - enemyChar.spAtt;
+					}
+					enemyChar.hp = enemyChar.hp - yourChar.att;
+					console.log("--------------------");
+					console.log("your current hp is: " + yourChar.hp);
+					console.log("the enemy's current hp is: " + enemyChar.hp);
+					console.log("--------------------");
+					if(yourChar.hp === 190){
+						$("#yourHPBar").html('<img src="assets/images/190hp.png" />' + '<p>' + yourChar.hp + "/" + "200" +'</p>');
+					}
+					else if (yourChar.hp === 180){
+						$("#yourHPBar").html('<img src="assets/images/180hp.png" />' + '<p>' + yourChar.hp + "/" + "200" +'</p>');
+					}
+					else if(yourChar.hp === 170){
+						$("#yourHPBar").html('<img src="assets/images/170hp.png" />' + '<p>' + yourChar.hp + "/" + "200" +'</p>');
+					}
+					else if (yourChar.hp === 160){
+						$("#yourHPBar").html('<img src="assets/images/160hp.png" />' + '<p>' + yourChar.hp + "/" + "200" +'</p>');
+					}
+					else if(yourChar.hp === 150){
+						$("#yourHPBar").html('<img src="assets/images/150hp.png" />' + '<p>' + yourChar.hp + "/" + "200" +'</p>');
+					}
+					else if (yourChar.hp === 140){
+						$("#yourHPBar").html('<img src="assets/images/140hp.png" />' + '<p>' + yourChar.hp + "/" + "200" +'</p>');
+					}
+					else if(yourChar.hp === 130){
+						$("#yourHPBar").html('<img src="assets/images/130hp.png" />' + '<p>' + yourChar.hp + "/" + "200" +'</p>');
+					}
+					else if (yourChar.hp === 120){
+						$("#yourHPBar").html('<img src="assets/images/120hp.png" />' + '<p>' + yourChar.hp + "/" + "200" +'</p>');
+					}
+					else if(yourChar.hp === 110){
+						$("#yourHPBar").html('<img src="assets/images/110hp.png" />' + '<p>' + yourChar.hp + "/" + "200" +'</p>');
+					}
+					else if (yourChar.hp === 100){
+						$("#yourHPBar").html('<img src="assets/images/100hp.png" />' + '<p>' + yourChar.hp + "/" + "200" +'</p>');
+					}
+					else if(yourChar.hp === 90){
+						$("#yourHPBar").html('<img src="assets/images/90hp.png" />' + '<p>' + yourChar.hp + "/" + "200" +'</p>');
+					}
+					else if (yourChar.hp === 80){
+						$("#yourHPBar").html('<img src="assets/images/80hp.png" />' + '<p>' + yourChar.hp + "/" + "200" +'</p>');
+					}
+					else if (yourChar.hp === 70){
+						$("#yourHPBar").html('<img src="assets/images/70hp.png" />' + '<p>' + yourChar.hp + "/" + "200" +'</p>');
+					}
+					else if (yourChar.hp === 60){
+						$("#yourHPBar").html('<img src="assets/images/60hp.png" />' + '<p>' + yourChar.hp + "/" + "200" +'</p>');
+					}
+					else if (yourChar.hp === 50){
+						$("#yourHPBar").html('<img src="assets/images/50hp.png" />' + '<p>' + yourChar.hp + "/" + "200" +'</p>');
+					}
+					else if (yourChar.hp === 40){
+						$("#yourHPBar").html('<img src="assets/images/40hp.png" />' + '<p>' + yourChar.hp + "/" + "200" +'</p>');
+					}
+					else if (yourChar.hp === 30){
+						$("#yourHPBar").html('<img src="assets/images/30hp.png" />' + '<p>' + yourChar.hp + "/" + "200" +'</p>');
+					}
+					else if (yourChar.hp === 20){
+						$("#yourHPBar").html('<img src="assets/images/20hp.png" />' + '<p>' + yourChar.hp + "/" + "200" +'</p>');
+					}
+					else if (yourChar.hp === 10){
+						$("#yourHPBar").html('<img src="assets/images/10hp.png" />' + '<p>' + yourChar.hp + "/" + "200" +'</p>');
+					}
+					else if(yourChar.hp <= 0){
+						alert("You lose! Refresh the browser to play again!");
+						$("#yourHPBar").html('<img src="assets/images/0hp.png" />' + '<p>' + yourChar.hp + "/" + "200" +'</p>');
+					} 
+					if (enemyChar.hp === 190){
+						$("#enemyHPBar").html('<img src="assets/images/190hp.png" />' + '<p>' + enemyChar.hp + "/" + "200" +'</p>');
+					}
+					else if (enemyChar.hp === 180){
+						$("#enemyHPBar").html('<img src="assets/images/180hp.png" />' + '<p>' + enemyChar.hp + "/" + "200" +'</p>');
+					}
+					else if (enemyChar.hp === 170){
+						$("#enemyHPBar").html('<img src="assets/images/170hp.png" />' + '<p>' + enemyChar.hp + "/" + "200" +'</p>');
+					}
+					else if (enemyChar.hp === 160){
+						$("#enemyHPBar").html('<img src="assets/images/160hp.png" />' + '<p>' + enemyChar.hp + "/" + "200" +'</p>');
+					}
+					else if (enemyChar.hp === 150){
+						$("#enemyHPBar").html('<img src="assets/images/150hp.png" />' + '<p>' + enemyChar.hp + "/" + "200" +'</p>');
+					}
+					else if (enemyChar.hp === 140){
+						$("#enemyHPBar").html('<img src="assets/images/140hp.png" />' + '<p>' + enemyChar.hp + "/" + "200" +'</p>');
+					}
+					else if (enemyChar.hp === 130){
+						$("#enemyHPBar").html('<img src="assets/images/130hp.png" />' + '<p>' + enemyChar.hp + "/" + "200" +'</p>');
+					}
+					else if (enemyChar.hp === 120){
+						$("#enemyHPBar").html('<img src="assets/images/120hp.png" />' + '<p>' + enemyChar.hp + "/" + "200" +'</p>');
+					}
+					else if (enemyChar.hp === 110){
+						$("#enemyHPBar").html('<img src="assets/images/110hp.png" />' + '<p>' + enemyChar.hp + "/" + "200" +'</p>');
+					}
+					else if (enemyChar.hp === 100){
+						$("#enemyHPBar").html('<img src="assets/images/100hp.png" />' + '<p>' + enemyChar.hp + "/" + "200" +'</p>');
+					}
+					else if (enemyChar.hp === 90){
+						$("#enemyHPBar").html('<img src="assets/images/90hp.png" />' + '<p>' + enemyChar.hp + "/" + "200" +'</p>');
+					}
+					else if (enemyChar.hp === 80){
+						$("#enemyHPBar").html('<img src="assets/images/80hp.png" />' + '<p>' + enemyChar.hp + "/" + "200" +'</p>');
+					}
+					else if (enemyChar.hp === 70){
+						$("#enemyHPBar").html('<img src="assets/images/70hp.png" />' + '<p>' + enemyChar.hp + "/" + "200" +'</p>');
+					}
+					else if (enemyChar.hp === 60){
+						$("#enemyHPBar").html('<img src="assets/images/60hp.png" />' + '<p>' + enemyChar.hp + "/" + "200" +'</p>');
+					}
+					else if (enemyChar.hp === 50){
+						$("#enemyHPBar").html('<img src="assets/images/50hp.png" />' + '<p>' + enemyChar.hp + "/" + "200" +'</p>');
+					}
+					else if (enemyChar.hp === 40){
+						$("#enemyHPBar").html('<img src="assets/images/40hp.png" />' + '<p>' + enemyChar.hp + "/" + "200" +'</p>');
+					}
+					else if (enemyChar.hp === 30){
+						$("#enemyHPBar").html('<img src="assets/images/30hp.png" />' + '<p>' + enemyChar.hp + "/" + "200" +'</p>');
+					}
+					else if (enemyChar.hp === 20){
+						$("#enemyHPBar").html('<img src="assets/images/20hp.png" />' + '<p>' + enemyChar.hp + "/" + "200" +'</p>');
+					}
+					else if (enemyChar.hp === 10){
+						$("#enemyHPBar").html('<img src="assets/images/10hp.png" />' + '<p>' + enemyChar.hp + "/" + "200" +'</p>');
+					}
+					else if (enemyChar.hp <= 0){
+						$("#enemyHPBar").html('<img src="assets/images/0hp.png" />' + '<p>' + enemyChar.hp + "/" + "200" +'</p>');
+						alert("You win! Refresh the browser to play again!");
+					}
+				});
+				$("#useSpecialAttack").on("click", function(){
+					yourChar.maleWarriorCrit();
+					enemyCrit();
+					function enemyCrit(){
+						var enemyCritChance = Math.floor(Math.random()*10);
+						if(enemyCritHappened){
+							enemyChar.att = enemyChar.att / 2;
+							enemyChar.spAtt = enemyChar.spAtt / 2;
+							enemyCritHappened = false;
+						}
+						if (enemyCritChance === 9){
+							alert("The enemy scored a critical hit!");
+							enemyChar.att = enemyChar.att * 2;
+							enemyChar.spAtt = enemyChar.spAtt * 2;
+							enemyCritHappened = true;
+						}
+					}
+					if (enemyChar === enemyMaleSorcerer && enemyChar.hp <= 50){
+						enemyMaleSorcerer.enemyMaleAbracadabra();
+					} else if (enemyChar === enemyMaleWarrior && enemyChar.hp <= 50){
+						enemyMaleWarrior.enemyMaleMightySword();
+					} else if (enemyChar === enemyFemaleSorcerer && enemyChar.hp <= 50){
+						enemyFemaleSorcerer.enemyFemaleAbracadabra();
+					} else if (enemyChar === enemyFemaleWarrior && enemyChar.hp <= 50){
+						enemyFemaleWarrior.enemyFemaleMightySword();
+					}	
+					var attackOrSpecialAttack = Math.floor(Math.random()*2);
+					if(attackOrSpecialAttack === 0){
+						console.log("The enemy used a physical attack!");
+						yourChar.hp = yourChar.hp - enemyChar.att;
+					} else if (attackOrSpecialAttack === 1){
+						console.log("The enemy used a special attack!");
+						yourChar.hp = yourChar.hp - enemyChar.spAtt;
+					}
+					enemyChar.hp = enemyChar.hp - yourChar.spAtt;
+					console.log("--------------------");
+					console.log("your current hp is: " + yourChar.hp);
+					console.log("the enemy's current hp is: " + enemyChar.hp);
+					console.log("--------------------");
+					if(yourChar.hp === 190){
+						$("#yourHPBar").html('<img src="assets/images/190hp.png" />' + '<p>' + yourChar.hp + "/" + "200" +'</p>');
+					}
+					else if (yourChar.hp === 180){
+						$("#yourHPBar").html('<img src="assets/images/180hp.png" />' + '<p>' + yourChar.hp + "/" + "200" +'</p>');
+					}
+					else if(yourChar.hp === 170){
+						$("#yourHPBar").html('<img src="assets/images/170hp.png" />' + '<p>' + yourChar.hp + "/" + "200" +'</p>');
+					}
+					else if (yourChar.hp === 160){
+						$("#yourHPBar").html('<img src="assets/images/160hp.png" />' + '<p>' + yourChar.hp + "/" + "200" +'</p>');
+					}
+					else if(yourChar.hp === 150){
+						$("#yourHPBar").html('<img src="assets/images/150hp.png" />' + '<p>' + yourChar.hp + "/" + "200" +'</p>');
+					}
+					else if (yourChar.hp === 140){
+						$("#yourHPBar").html('<img src="assets/images/140hp.png" />' + '<p>' + yourChar.hp + "/" + "200" +'</p>');
+					}
+					else if(yourChar.hp === 130){
+						$("#yourHPBar").html('<img src="assets/images/130hp.png" />' + '<p>' + yourChar.hp + "/" + "200" +'</p>');
+					}
+					else if (yourChar.hp === 120){
+						$("#yourHPBar").html('<img src="assets/images/120hp.png" />' + '<p>' + yourChar.hp + "/" + "200" +'</p>');
+					}
+					else if(yourChar.hp === 110){
+						$("#yourHPBar").html('<img src="assets/images/110hp.png" />' + '<p>' + yourChar.hp + "/" + "200" +'</p>');
+					}
+					else if (yourChar.hp === 100){
+						$("#yourHPBar").html('<img src="assets/images/100hp.png" />' + '<p>' + yourChar.hp + "/" + "200" +'</p>');
+					}
+					else if(yourChar.hp === 90){
+						$("#yourHPBar").html('<img src="assets/images/90hp.png" />' + '<p>' + yourChar.hp + "/" + "200" +'</p>');
+					}
+					else if (yourChar.hp === 80){
+						$("#yourHPBar").html('<img src="assets/images/80hp.png" />' + '<p>' + yourChar.hp + "/" + "200" +'</p>');
+					}
+					else if (yourChar.hp === 70){
+						$("#yourHPBar").html('<img src="assets/images/70hp.png" />' + '<p>' + yourChar.hp + "/" + "200" +'</p>');
+					}
+					else if (yourChar.hp === 60){
+						$("#yourHPBar").html('<img src="assets/images/60hp.png" />' + '<p>' + yourChar.hp + "/" + "200" +'</p>');
+					}
+					else if (yourChar.hp === 50){
+						$("#yourHPBar").html('<img src="assets/images/50hp.png" />' + '<p>' + yourChar.hp + "/" + "200" +'</p>');
+					}
+					else if (yourChar.hp === 40){
+						$("#yourHPBar").html('<img src="assets/images/40hp.png" />' + '<p>' + yourChar.hp + "/" + "200" +'</p>');
+					}
+					else if (yourChar.hp === 30){
+						$("#yourHPBar").html('<img src="assets/images/30hp.png" />' + '<p>' + yourChar.hp + "/" + "200" +'</p>');
+					}
+					else if (yourChar.hp === 20){
+						$("#yourHPBar").html('<img src="assets/images/20hp.png" />' + '<p>' + yourChar.hp + "/" + "200" +'</p>');
+					}
+					else if (yourChar.hp === 10){
+						$("#yourHPBar").html('<img src="assets/images/10hp.png" />' + '<p>' + yourChar.hp + "/" + "200" +'</p>');
+					}
+					else if(yourChar.hp <= 0){
+						alert("You lose! Refresh the browser to play again!");
+						$("#yourHPBar").html('<img src="assets/images/0hp.png" />' + '<p>' + yourChar.hp + "/" + "200" +'</p>');
+					} 
+					if (enemyChar.hp === 190){
+						$("#enemyHPBar").html('<img src="assets/images/190hp.png" />' + '<p>' + enemyChar.hp + "/" + "200" +'</p>');
+					}
+					else if (enemyChar.hp === 180){
+						$("#enemyHPBar").html('<img src="assets/images/180hp.png" />' + '<p>' + enemyChar.hp + "/" + "200" +'</p>');
+					}
+					else if (enemyChar.hp === 170){
+						$("#enemyHPBar").html('<img src="assets/images/170hp.png" />' + '<p>' + enemyChar.hp + "/" + "200" +'</p>');
+					}
+					else if (enemyChar.hp === 160){
+						$("#enemyHPBar").html('<img src="assets/images/160hp.png" />' + '<p>' + enemyChar.hp + "/" + "200" +'</p>');
+					}
+					else if (enemyChar.hp === 150){
+						$("#enemyHPBar").html('<img src="assets/images/150hp.png" />' + '<p>' + enemyChar.hp + "/" + "200" +'</p>');
+					}
+					else if (enemyChar.hp === 140){
+						$("#enemyHPBar").html('<img src="assets/images/140hp.png" />' + '<p>' + enemyChar.hp + "/" + "200" +'</p>');
+					}
+					else if (enemyChar.hp === 130){
+						$("#enemyHPBar").html('<img src="assets/images/130hp.png" />' + '<p>' + enemyChar.hp + "/" + "200" +'</p>');
+					}
+					else if (enemyChar.hp === 120){
+						$("#enemyHPBar").html('<img src="assets/images/120hp.png" />' + '<p>' + enemyChar.hp + "/" + "200" +'</p>');
+					}
+					else if (enemyChar.hp === 110){
+						$("#enemyHPBar").html('<img src="assets/images/110hp.png" />' + '<p>' + enemyChar.hp + "/" + "200" +'</p>');
+					}
+					else if (enemyChar.hp === 100){
+						$("#enemyHPBar").html('<img src="assets/images/100hp.png" />' + '<p>' + enemyChar.hp + "/" + "200" +'</p>');
+					}
+					else if (enemyChar.hp === 90){
+						$("#enemyHPBar").html('<img src="assets/images/90hp.png" />' + '<p>' + enemyChar.hp + "/" + "200" +'</p>');
+					}
+					else if (enemyChar.hp === 80){
+						$("#enemyHPBar").html('<img src="assets/images/80hp.png" />' + '<p>' + enemyChar.hp + "/" + "200" +'</p>');
+					}
+					else if (enemyChar.hp === 70){
+						$("#enemyHPBar").html('<img src="assets/images/70hp.png" />' + '<p>' + enemyChar.hp + "/" + "200" +'</p>');
+					}
+					else if (enemyChar.hp === 60){
+						$("#enemyHPBar").html('<img src="assets/images/60hp.png" />' + '<p>' + enemyChar.hp + "/" + "200" +'</p>');
+					}
+					else if (enemyChar.hp === 50){
+						$("#enemyHPBar").html('<img src="assets/images/50hp.png" />' + '<p>' + enemyChar.hp + "/" + "200" +'</p>');
+					}
+					else if (enemyChar.hp === 40){
+						$("#enemyHPBar").html('<img src="assets/images/40hp.png" />' + '<p>' + enemyChar.hp + "/" + "200" +'</p>');
+					}
+					else if (enemyChar.hp === 30){
+						$("#enemyHPBar").html('<img src="assets/images/30hp.png" />' + '<p>' + enemyChar.hp + "/" + "200" +'</p>');
+					}
+					else if (enemyChar.hp === 20){
+						$("#enemyHPBar").html('<img src="assets/images/20hp.png" />' + '<p>' + enemyChar.hp + "/" + "200" +'</p>');
+					}
+					else if (enemyChar.hp === 10){
+						$("#enemyHPBar").html('<img src="assets/images/10hp.png" />' + '<p>' + enemyChar.hp + "/" + "200" +'</p>');
+					}
+					else if (enemyChar.hp <= 0){
+						$("#enemyHPBar").html('<img src="assets/images/0hp.png" />' + '<p>' + enemyChar.hp + "/" + "200" +'</p>');
+						alert("You win! Refresh the browser to play again!");
+					}
+				});
+			}
+		});
+	}
+</script>
+</body>
+</html>
